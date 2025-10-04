@@ -26,7 +26,6 @@ const ResendAuth = () => {
     try {
       // Client component mein sirf email string pass karo, FormData nahi!
       await signIn("resend", { email });
-      
     } catch (err) {
       setError("Failed to send email. Please try again.");
       setLoading(false);
@@ -49,7 +48,7 @@ const ResendAuth = () => {
       <Button
         type="submit"
         disabled={loading}
-        className="px-5 py-2 -mt-1 mb-4 text-[14px] sm:text-[16px] font-[500] cursor-pointer"
+        className="px-5 py-2 w-full -mt-1 mb-4 text-[14px] sm:text-[16px] font-[500] cursor-pointer"
       >
         {loading ? "Sending..." : "Send Email"}
       </Button>
