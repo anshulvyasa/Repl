@@ -3,12 +3,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 
 export const AddNewButton = () => {
-  const handleCreateNewPlayground = async () => {
-    const res = await fetch("http://localhost:5000/", {
-      credentials: "include",
-    });
-    console.log(res.body);
-  };
+  const handleCreateNewPlayground = async () => {};
 
   return (
     <div

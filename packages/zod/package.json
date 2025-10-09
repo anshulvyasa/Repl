@@ -1,0 +1,16 @@
+{
+  "name": "@repo/zod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "zod": "^4.1.12"
+  },
+  "exports": {
+    "./playground": "./src/playground/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

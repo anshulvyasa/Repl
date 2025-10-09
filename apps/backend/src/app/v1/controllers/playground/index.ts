@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "@repo/db";
+import { createPlaygroundSchema } from "@repo/zod/playground";
 
 export const CreatePlayGroundController = async (
   req: Request,
@@ -9,20 +10,40 @@ export const CreatePlayGroundController = async (
     return res.status(400).json({ message: "User not authenticated" });
   }
 
-  const playgroundCreationResponse = await prisma.playground.create({
-    data: {
-      title: req.body.title,
-      description: req.body.description,
-      template: req.body.template,
-      userId: req.user?.id,
-    },
-  });
+  const parsedBody = createPlaygroundSchema.safeParse(req.body);
 
-  res.status(200).json({
-    success: true,
-    data: {
-      message: "You are Succesfully Created your playground",
-      playground: playgroundCreationResponse,
-    },
-  });
+  if (parsedBody.error) {
+    return res.status(400).json({
+      success: false,
+      data: {
+        message: "Credentials are not Correct",
+      },
+    });
+  }
+
+  try {
+    const playgroundCreationResponse = await prisma.playground.create({
+      data: {
+        title: req.body.title,
+        description: req.body.description,
+        template: req.body.template,
+        userId: req.user?.id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "You are Succesfully Created your playground",
+        playground: playgroundCreationResponse,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      data: {
+        message: "Error while Creating The Playground",
+      },
+    });
+  }
 };

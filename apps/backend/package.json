@@ -11,6 +11,7 @@
   "dependencies": {
     "@auth/core": "^0.40.0",
     "@repo/db": "workspace:*",
+    "@repo/zod":"workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
