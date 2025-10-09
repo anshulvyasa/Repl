@@ -30,6 +30,8 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+  playgrounds   Playground[]
+  startmark     StarMark[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,4 +90,38 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+enum Template {
+  REACT
+  NEXT
+  EXPRESS
+  ANGULAR
+  VUE
+  HONO
+}
+
+model Playground {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  template    Template   @default(REACT)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  userId      String
+  starmark    StarMark[]
+  user        User       @relation(fields: [userId], references: [id])
+}
+
+model StarMark {
+  id           String   @id @default(cuid())
+  userId       String
+  playgroundId String
+  isMarked     Boolean
+  createdAt    DateTime
+
+  playground Playground @relation(fields: [playgroundId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+
+  @@unique([userId, playgroundId]) // Establishing many to many Relationship
 }

@@ -3,6 +3,13 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 
 export const AddNewButton = () => {
+  const handleCreateNewPlayground = async () => {
+    const res = await fetch("http://localhost:5000/", {
+      credentials: "include",
+    });
+    console.log(res.body);
+  };
+
   return (
     <div
       className="group px-6 py-6 flex flex-row justify-between items-center border rounded-lg bg-muted cursor-pointer 
@@ -16,6 +23,7 @@ export const AddNewButton = () => {
           variant={"outline"}
           className="flex justify-center items-center bg-white group-hover:bg-[#fff8f8] group-hover:border-[#E93F3F] group-hover:text-[#E93F3F] transition-colors duration-300"
           size={"icon"}
+          onClick={handleCreateNewPlayground}
         >
           <Plus
             size={30}
