@@ -7,7 +7,12 @@ export const CreatePlayGroundController = async (
   res: Response
 ) => {
   if (!req.user?.id) {
-    return res.status(400).json({ message: "User not authenticated" });
+    return res.status(400).json({
+      success: false,
+      data: {
+        message: "User not authenticated",
+      },
+    });
   }
 
   const parsedBody = createPlaygroundSchema.safeParse(req.body);
@@ -43,6 +48,51 @@ export const CreatePlayGroundController = async (
       success: false,
       data: {
         message: "Error while Creating The Playground",
+      },
+    });
+  }
+};
+
+export const getAllPlaygroundForUser = async (req: Request, res: Response) => {
+  if (!req.user?.id) {
+    return res.status(400).json({
+      success: false,
+      data: {
+        message: "User not authenticated",
+      },
+    });
+  }
+
+  try {
+    const playgrounds = await prisma.playground.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      include: {
+        user: true,
+        starmark: {
+          where: {
+            userId: req.user.id,
+          },
+          select: {
+            isMarked: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "get all playground successfully",
+        playgrounds,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      data: {
+        message: "Error while Fetching Your Playground",
       },
     });
   }

@@ -1,6 +1,10 @@
 import { Router } from "express";
-import { CreatePlayGroundController } from "../../controllers/playground";
+import {
+  CreatePlayGroundController,
+  getAllPlaygroundForUser,
+} from "../../controllers/playground";
 
 export const playGroundRoutes: Router = Router();
 
 playGroundRoutes.post("/create", CreatePlayGroundController);
+playGroundRoutes.get("/get", getAllPlaygroundForUser);
