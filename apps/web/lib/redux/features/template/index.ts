@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-enum Template {
+export enum Template {
   REACT,
   NEXT,
   EXPRESS,
@@ -10,7 +10,7 @@ enum Template {
   NULL,
 }
 
-interface TemplateData {
+export interface TemplateData {
   title: string;
   description: string;
   template: Template;
@@ -56,4 +56,5 @@ export const {
   updateTemplateDescription,
   updateTemplateIconTemplate,
 } = templatedataSlice.actions;
+
 export default templatedataSlice.reducer;

@@ -125,3 +125,22 @@ model StarMark {
 
   @@unique([userId, playgroundId]) // Establishing many to many Relationship
 }
+
+enum Category {
+  frontend
+  backend
+  fullstack
+}
+
+model Templates {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  color       String
+  popularity  Float  @default(0)
+  ratingCount BigInt @default(0)
+  tags        String[]
+  features    String[]
+  category    Category
+}

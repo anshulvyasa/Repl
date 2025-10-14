@@ -1,8 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
+import templateReducer from "./features/template/index";
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: {
+      template: templateReducer,
+    },
   });
 };
 
