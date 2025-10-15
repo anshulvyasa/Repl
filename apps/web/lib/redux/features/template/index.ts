@@ -1,60 +1,29 @@
+import { TemplateOption } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export enum Template {
-  REACT,
-  NEXT,
-  EXPRESS,
-  HONO,
-  ANGULAR,
-  VUE,
-  NULL,
+export interface SelectedTemplateData {
+  name: string | null;
+  template: TemplateOption | null;
 }
 
-export interface TemplateData {
-  title: string;
-  description: string;
-  template: Template;
-  icon: string;
-  tags: string[];
-}
-
-const initialState: TemplateData = {
-  title: "",
-  description: "",
-  template: Template.NULL,
-  icon: "code",
-  tags: [],
+const initialState: SelectedTemplateData = {
+  name: null,
+  template: null,
 };
 
-const templatedataSlice = createSlice({
-  name: "template",
+const selectedSliceData = createSlice({
+  name: "selectedTemplateData",
   initialState,
   reducers: {
-    updateTemplateTitle(state, action: PayloadAction<string>) {
-      state.title = action.payload;
+    updateSelectedTemplateProjectName(state, action: PayloadAction<string|null>) {
+      state.name = action.payload;
     },
-    updateTemplateDescription(state, action: PayloadAction<string>) {
-      state.description = action.payload;
-    },
-    updateTemplateIconTemplate(
-      state,
-      action: PayloadAction<{
-        template: Template;
-        icon: string;
-        tags: string[];
-      }>
-    ) {
-      state.template = action.payload.template;
-      state.icon = action.payload.icon;
-      state.tags = action.payload.tags;
+    updateSelectedTemplate(state, action: PayloadAction<TemplateOption|null>) {
+      state.template = action.payload;
     },
   },
 });
 
-export const {
-  updateTemplateTitle,
-  updateTemplateDescription,
-  updateTemplateIconTemplate,
-} = templatedataSlice.actions;
-
-export default templatedataSlice.reducer;
+export const { updateSelectedTemplateProjectName, updateSelectedTemplate } =
+  selectedSliceData.actions;
+export default selectedSliceData.reducer;

@@ -1,4 +1,4 @@
-interface TemplateOption {
+export interface TemplateOption {
   id: string;
   name: string;
   description: string;
@@ -9,5 +9,3 @@ interface TemplateOption {
   features: string[];
   category: "frontend" | "backend" | "fullstack";
 }
-
-export const TemplateSelection = () => {};
