@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/app/v1/middleware/auth-middleware.ts","./src/types/express/index.d.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/app/v1/index.ts","./src/app/v1/controllers/playground/index.ts","./src/app/v1/controllers/template/index.ts","./src/app/v1/middleware/auth-middleware.ts","./src/app/v1/routes/playground/index.ts","./src/app/v1/routes/template/index.ts","./src/types/express/index.d.ts"],"version":"5.9.2"}

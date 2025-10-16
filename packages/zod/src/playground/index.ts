@@ -1,12 +1,12 @@
-import z, { string } from "zod";
+import z from "zod";
 
 export const createPlaygroundSchema = z.object({
   title: z.string(),
   description: z.string(),
-  template: z
-    .enum(["REACT", "NEXT", "EXPRESS", "ANGULAR", "VUE", "HONO"])
-    .optional(),
+  template: z.enum(["REACT", "NEXT", "EXPRESS", "ANGULAR", "VUE", "HONO"]),
 });
+
+export type createPlaygroundSchemaType = z.infer<typeof createPlaygroundSchema>;
 
 export const TemplateDataSchema = z.object({
   id: z.string(),

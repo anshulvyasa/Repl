@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProviderCustom } from "@/providers/theme-provider";
 import { StoreProvider } from "@/providers/store-provider";
+import { QueryProvider } from "@/providers/query-client-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,7 +35,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <StoreProvider>{children}</StoreProvider>
+            <StoreProvider>
+              <QueryProvider>{children}</QueryProvider>
+            </StoreProvider>
           </ThemeProviderCustom>
         </SessionProvider>
       </body>

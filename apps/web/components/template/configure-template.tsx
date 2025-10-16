@@ -9,7 +9,14 @@ import {
 import { useSelectedTemplate } from "@/lib/redux/selectoranddispatcher/useSelectedTemplate";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Zap } from "lucide-react";
+import { Loader, Zap } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPlaygroundSchemaType } from "@repo/zod/playground";
+import { createPlayGroundService } from "@/services";
+import { randomUUID } from "crypto";
+import { toast } from "sonner";
+import { useDialogSelectorAndDispatcher } from "@/lib/redux/selectoranddispatcher/useDialogSelectorandDispatcher";
+import { useRouter } from "next/navigation";
 
 export const ConfigureTemplate = ({
   setStep,
@@ -21,8 +28,66 @@ export const ConfigureTemplate = ({
     updateSelectedTemplateName,
     updateSelectedProjectTemplate,
   } = useSelectedTemplate();
+  const { closeDialog } = useDialogSelectorAndDispatcher();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const handleCreateProject = () => {};
+  // defining The Query to Create Playground
+  const { mutate, isPending, isError, data } = useMutation({
+    mutationFn: (data: createPlaygroundSchemaType) =>
+      createPlayGroundService(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["playgrounds"] });
+      setTimeout(
+        () => router.push(`/playground/${data.data.playgroundId}`),
+        4000
+      );
+    },
+  });
+
+  const handleCreateProject = () => {
+    if (!getSelectedTemplateData.template) {
+      alert("Select Template First");
+      return;
+    }
+
+    const templateMap: Record<
+      string,
+      "REACT" | "NEXT" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR"
+    > = {
+      react: "REACT",
+      next: "NEXT",
+      express: "EXPRESS",
+      vue: "VUE",
+      hono: "HONO",
+      angular: "ANGULAR",
+    };
+
+    const reqData: createPlaygroundSchemaType = {
+      title: getSelectedTemplateData.name || `playground-${randomUUID()}`,
+      description:
+        getSelectedTemplateData.template?.description ||
+        `let's build something crazy`,
+      template: templateMap[getSelectedTemplateData.template?.id] || "REACT",
+    };
+
+    mutate(reqData);
+
+    if (isError) {
+      toast.error("Error Creating The PlayGround");
+      return;
+    }
+
+    toast.success(
+      "PlayGround Created Successfully Redirecting You to PlayGround in Few Second"
+    );
+
+    updateSelectedTemplateName(null);
+    updateSelectedProjectTemplate(null);
+    setStep("select");
+    closeDialog();
+    console.log("Data is ", data);
+  };
 
   const handleBack = () => {
     updateSelectedTemplateName(null);
@@ -68,15 +133,24 @@ export const ConfigureTemplate = ({
       </div>
 
       <div className="flex justify-between gap-3 mt-4 pt-4 border-t">
-        <Button variant="outline" onClick={handleBack}>
-          Back
-        </Button>
-        <Button
-          className="bg-[#E93F3F] hover:bg-[#d03636]"
-          onClick={handleCreateProject}
-        >
-          Create Project
-        </Button>
+        {isPending ? (
+          <Button className="bg-[#E93F3F]">
+            <Loader className="animate-spin transition-all ease-in" />
+            <span>Creating...</span>
+          </Button>
+        ) : (
+          <>
+            <Button variant="outline" onClick={handleBack}>
+              Back
+            </Button>
+            <Button
+              className="bg-[#E93F3F] hover:bg-[#d03636]"
+              onClick={handleCreateProject}
+            >
+              Create Project
+            </Button>
+          </>
+        )}
       </div>
     </DialogContent>
   );

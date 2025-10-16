@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "../ui/sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { SidebarTitle } from "./sidebar-title";
 import {
@@ -66,6 +66,20 @@ const SidebarComponent = ({
   const [recentPlayGround, setRecentPlayGround] = useState(
     initialDataPlayground
   );
+
+  useEffect(() => {
+    setRecentPlayGround(initialDataPlayground);
+
+    const filteredStarredPlayGround = initialDataPlayground.filter(
+      (playground) => playground.starred
+    );
+
+    setStarredPlayground(filteredStarredPlayGround);
+  }, [initialDataPlayground]);
+
+  console.log("Starred Data is ", starredPlayground);
+  console.log("Recent PlayGround data is ", recentPlayGround);
+  console.log("Initial PlayGround Data is ", initialDataPlayground);
 
   return (
     <Sidebar>

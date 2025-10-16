@@ -6,7 +6,8 @@
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "build": "tsc -b"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
@@ -14,7 +15,8 @@
     "prisma": "^6.16.3"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./jsclient": "./dist/index.js"
   },
   "keywords": [],
   "author": "",

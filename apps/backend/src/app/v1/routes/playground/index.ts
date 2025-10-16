@@ -3,8 +3,9 @@ import {
   CreatePlayGroundController,
   getAllPlaygroundForUser,
 } from "../../controllers/playground";
+import { authMiddleWare } from "../../middleware/auth-middleware";
 
 export const playGroundRoutes: Router = Router();
 
-playGroundRoutes.post("/create", CreatePlayGroundController);
-playGroundRoutes.get("/get", getAllPlaygroundForUser);
+playGroundRoutes.post("/create", authMiddleWare, CreatePlayGroundController);
+playGroundRoutes.get("/get", authMiddleWare, getAllPlaygroundForUser);

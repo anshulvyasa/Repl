@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "@repo/db";
+import { prisma } from "@repo/db/jsclient";
 import { TemplateDataSchema } from "@repo/zod/playground";
 
 export const getAllTemplate = async (req: Request, res: Response) => {
