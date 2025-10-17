@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import selectedTemplateReducer from "./features/template/index";
 import dialogReducer from "./features/dialog/index";
+import playgroundReducer from "./features/projects/index";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       selectedTemplate: selectedTemplateReducer,
       dialogState: dialogReducer,
+      playgrounds: playgroundReducer,
     },
   });
 };

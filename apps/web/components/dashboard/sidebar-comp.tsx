@@ -77,10 +77,6 @@ const SidebarComponent = ({
     setStarredPlayground(filteredStarredPlayGround);
   }, [initialDataPlayground]);
 
-  console.log("Starred Data is ", starredPlayground);
-  console.log("Recent PlayGround data is ", recentPlayGround);
-  console.log("Initial PlayGround Data is ", initialDataPlayground);
-
   return (
     <Sidebar>
       <SidebarHeader>
@@ -105,7 +101,7 @@ const SidebarComponent = ({
               <Plus className="h-4 w-4" />
             </SidebarGroupAction>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="overflow-y-auto max-h-[30vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {starredPlayground.length === 0 ? (
                   <div className=" text-muted-foreground py-2 px-2 w-full">
                     No Starred Playground
@@ -145,7 +141,7 @@ const SidebarComponent = ({
               <FolderPlus className="h-4 w-4" />
             </SidebarGroupAction>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="overflow-y-auto max-h-[30vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {recentPlayGround.length === 0
                   ? null
                   : recentPlayGround.map((playground) => {

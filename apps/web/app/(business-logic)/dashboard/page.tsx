@@ -2,10 +2,14 @@
 
 import { AddNewButton } from "@/components/dashboard/add-new-button";
 import { AddRepo } from "@/components/dashboard/add-repo";
+import { DashBoardTable } from "@/components/dashboard/dashboard-table";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { useProject } from "@/lib/redux/selectoranddispatcher/useProjects";
 
 const DashboardPage = () => {
-  const playgrounds = [];
+  const { playgrounds } = useProject();
+
+  console.log("Playground is ", playgrounds);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen mx-auto max-w-7xl px-4 py-10">
@@ -14,11 +18,7 @@ const DashboardPage = () => {
         <AddRepo />
       </div>
       <div className="flex flex-col justify-center items-center mt-10 w-full">
-        {playgrounds.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div>Baad me karte hai ji</div>
-        )}
+        {playgrounds.length === 0 ? <EmptyState /> : <DashBoardTable />}
       </div>
     </div>
   );
