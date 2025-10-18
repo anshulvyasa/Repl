@@ -1,10 +1,27 @@
 import z from "zod";
 
+// Server Side Schema
 export const createPlaygroundSchema = z.object({
   title: z.string(),
   description: z.string(),
   template: z.enum(["REACT", "NEXT", "EXPRESS", "ANGULAR", "VUE", "HONO"]),
 });
+
+export const editStarMark = z.object({
+  isMarked: z.boolean(),
+});
+
+// *************************************************************************************************************************************************************************
+// schema that can be used for client and server
+export const editPlaygroundSchema = z.object({
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+});
+
+export type editPlaygroundSchemaType=z.infer<typeof editPlaygroundSchema>;
+
+// *************************************************************************************************************************************************************************
+// Client Side Schemas
 
 const userSchema = z.object({
   createdAt: z.string(),

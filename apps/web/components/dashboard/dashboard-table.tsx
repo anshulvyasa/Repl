@@ -17,10 +17,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Eye, MoreHorizontal } from "lucide-react";
+import { Copy, ExternalLink, Eye, MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
+import { DeletePlayGroundComponent } from "./deletePlayground";
+import { CopyPlaygroundUrl } from "./copy-playground-url";
+import { EditPlaygrounds } from "./edit-playground";
+import { EditPlaygroundDataDialog } from "./edit-dialog";
+import { useState } from "react";
 
 export const DashBoardTable = () => {
   const { playgrounds } = useProject();
@@ -97,6 +103,32 @@ export const DashBoardTable = () => {
                         Open Project
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/playground/${playground.id}`}
+                        target="_blank"
+                        className="flex items-center"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Open in new Tab
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <EditPlaygrounds
+                      playgroundId={playground.id}
+                      title={playground.title}
+                      description={playground.description}
+                    />
+                    <DropdownMenuItem>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Duplicate
+                    </DropdownMenuItem>
+                    <CopyPlaygroundUrl playgroundId={playground.id} />
+                    <DropdownMenuSeparator />
+                    <DeletePlayGroundComponent
+                      playgroundId={playground.id}
+                      playgroundTitle={playground.title}
+                    />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

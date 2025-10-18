@@ -64,7 +64,9 @@ export const ConfigureTemplate = ({
     };
 
     const reqData: createPlaygroundSchemaType = {
-      title: getSelectedTemplateData.name || `playground-${randomUUID()}`,
+      title:
+        getSelectedTemplateData.name ||
+        `playground-${window.crypto.randomUUID()}`,
       description:
         getSelectedTemplateData.template?.description ||
         `let's build something crazy`,

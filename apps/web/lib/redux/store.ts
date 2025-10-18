@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import selectedTemplateReducer from "./features/template/index";
 import dialogReducer from "./features/dialog/index";
 import playgroundReducer from "./features/projects/index";
+import editPlaygroundDialogStateSlice from "./features/editdialog/index";
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +10,7 @@ export const makeStore = () => {
       selectedTemplate: selectedTemplateReducer,
       dialogState: dialogReducer,
       playgrounds: playgroundReducer,
+      editDialogState: editPlaygroundDialogStateSlice,
     },
   });
 };
