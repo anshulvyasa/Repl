@@ -102,15 +102,16 @@ enum Template {
 }
 
 model Playground {
-  id          String     @id @default(cuid())
-  title       String
-  description String
-  template    Template   @default(REACT)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  userId      String
-  starmark    StarMark[]
-  user        User       @relation(fields: [userId], references: [id])
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  template      Template       @default(REACT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String
+  starmark      StarMark[]
+  TemplateFiles TemplateFile[]
+  user          User           @relation(fields: [userId], references: [id])
 }
 
 model StarMark {
@@ -118,12 +119,21 @@ model StarMark {
   userId       String
   playgroundId String
   isMarked     Boolean
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime @default(now())
 
   playground Playground @relation(fields: [playgroundId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
 
   @@unique([userId, playgroundId]) // Establishing many to many Relationship
+}
+
+model TemplateFile {
+  id           String     @id @default(cuid())
+  content      Json
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  playgroundId String     @unique
+  playground   Playground @relation(fields: [playgroundId], references: [id], onDelete: Cascade)
 }
 
 enum Category {
@@ -138,8 +148,8 @@ model Templates {
   description String
   icon        String
   color       String
-  popularity  Float  @default(0)
-  ratingCount BigInt @default(0)
+  popularity  Float    @default(0)
+  ratingCount BigInt   @default(0)
   tags        String[]
   features    String[]
   category    Category
