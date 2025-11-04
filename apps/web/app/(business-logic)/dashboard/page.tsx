@@ -9,7 +9,6 @@ import { useProject } from "@/lib/redux/selectoranddispatcher/useProjects";
 const DashboardPage = () => {
   const { playgrounds } = useProject();
 
-  console.log("Playground is ", playgrounds);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen mx-auto max-w-7xl px-4 py-10">

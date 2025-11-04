@@ -13,10 +13,10 @@ import { Loader, Zap } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPlaygroundSchemaType } from "@repo/zod/playground";
 import { createPlayGroundService } from "@/services";
-import { randomUUID } from "crypto";
 import { toast } from "sonner";
 import { useDialogSelectorAndDispatcher } from "@/lib/redux/selectoranddispatcher/useDialogSelectorandDispatcher";
 import { useRouter } from "next/navigation";
+import { TemplateFolderSchema } from "@repo/zod/files";
 
 export const ConfigureTemplate = ({
   setStep,
@@ -36,7 +36,7 @@ export const ConfigureTemplate = ({
   const { mutate, isPending, isError, data } = useMutation({
     mutationFn: (data: createPlaygroundSchemaType) =>
       createPlayGroundService(data),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["playgrounds"] });
       setTimeout(
         () => router.push(`/playground/${data.data.playgroundId}`),
@@ -88,7 +88,6 @@ export const ConfigureTemplate = ({
     updateSelectedProjectTemplate(null);
     setStep("select");
     closeDialog();
-    console.log("Data is ", data);
   };
 
   const handleBack = () => {

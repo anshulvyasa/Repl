@@ -83,8 +83,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!query.data?.data?.playgrounds) return;
 
-    console.log("backend data is ", query.data.data.playgrounds[0]);
-
     const formattedPlayground =
       (query.data.data.playgrounds as PlaygroundItem[]).map((item) => ({
         id: item.id,

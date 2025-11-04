@@ -34,16 +34,11 @@ export const EditPlaygroundDataDialog = ({
   dialogState: boolean;
   setDialogState: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  console.log("Edit Data is ", playgroundId, "  ", title, "  ", description);
-
   const [editData, setEditData] = useState<EditProjectData>({
     title,
     description,
   });
   const queryClient = useQueryClient();
-
-  console.log("Edit Data is ", playgroundId, "  ", title, "  ", description);
-  console.log("State Data is ", editData);
 
   const editPlaygroundQuery = useMutation({
     mutationFn: () => updatePlaygroundDataService(playgroundId, editData),

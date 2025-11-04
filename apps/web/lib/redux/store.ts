@@ -3,6 +3,7 @@ import selectedTemplateReducer from "./features/template/index";
 import dialogReducer from "./features/dialog/index";
 import playgroundReducer from "./features/projects/index";
 import editPlaygroundDialogStateSlice from "./features/editdialog/index";
+import playgroundTemplateFilesReducer from "./features/playground-file-data/index";
 
 export const makeStore = () => {
   return configureStore({
@@ -11,6 +12,7 @@ export const makeStore = () => {
       dialogState: dialogReducer,
       playgrounds: playgroundReducer,
       editDialogState: editPlaygroundDialogStateSlice,
+      playgroundTemplateFiles: playgroundTemplateFilesReducer,
     },
   });
 };

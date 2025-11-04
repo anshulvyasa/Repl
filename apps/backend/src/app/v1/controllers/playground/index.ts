@@ -5,33 +5,28 @@ import {
   editPlaygroundSchema,
   editStarMark,
 } from "@repo/zod/playground";
-import path from "path";
-import { templatePaths } from "../../lib/template";
-import {
-  readTemplateStructureFromJson,
-  saveTemplateStructureToJson,
-} from "../../lib/playground/path-to-json";
-import { Prisma } from "@repo/db";
-import fs from "fs/promises";
+
 
 export const CreatePlayGroundController = async (
   req: Request,
   res: Response
 ) => {
   if (!req.user?.id) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: "You Are Not Authenticated",
     });
+    return;
   }
 
   const parsedBody = createPlaygroundSchema.safeParse(req.body);
 
   if (parsedBody.error) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: "Wrong Data is send",
     });
+    return;
   }
 
   try {
@@ -44,34 +39,11 @@ export const CreatePlayGroundController = async (
       },
     });
 
-    const templatePath = path.join(
-      process.cwd(),
-      templatePaths[parsedBody.data.template]
-    );
-    const outputPath = path.join(
-      process.cwd(),
-      "/output",
-      templatePaths[parsedBody.data.template]
-    );
-
-    await saveTemplateStructureToJson(templatePath, outputPath);
-    const fileInJsonStyle = await readTemplateStructureFromJson(outputPath);
-
-    await prisma.templateFile.create({
-      data: {
-        playgroundId: playgroundCreationResponse.id,
-        content: fileInJsonStyle as unknown as Prisma.InputJsonValue,
-      },
-    });
-
-    await fs.rm(outputPath, { recursive: true });
-
     res.status(200).json({
       success: true,
       data: {
         message: "You are Succesfully Created your playground",
         playgroundId: playgroundCreationResponse.id,
-        files: fileInJsonStyle,
       },
     });
   } catch (err) {

@@ -1,19 +1,6 @@
-import { dir } from "console";
 import * as fs from "fs";
 import * as path from "path";
-
-export interface TemplateFile {
-  fileName: string;
-  fileExtension: string;
-  content: string;
-}
-
-export interface TemplateFolder {
-  folderName: string;
-  items: (TemplateFile | TemplateFolder)[];
-}
-
-export type TemplateItem = TemplateFile | TemplateFolder;
+import { TemplateFolder, TemplateItem } from "@repo/zod/files";
 
 interface ScanOptions {
   ignoreFiles?: string[];
