@@ -35,3 +35,9 @@ export const updatePlaygroundDataService = async (
 
   return response.data;
 };
+
+export const getPlaygroundTemplateFiles = async (id: string) => {
+  const response = await axiosInstance.get(`app/v1/files/get/${id}`);
+
+  return response.data;
+};

@@ -16,7 +16,6 @@ import { createPlayGroundService } from "@/services";
 import { toast } from "sonner";
 import { useDialogSelectorAndDispatcher } from "@/lib/redux/selectoranddispatcher/useDialogSelectorandDispatcher";
 import { useRouter } from "next/navigation";
-import { TemplateFolderSchema } from "@repo/zod/files";
 
 export const ConfigureTemplate = ({
   setStep,
@@ -33,7 +32,7 @@ export const ConfigureTemplate = ({
   const queryClient = useQueryClient();
 
   // defining The Query to Create Playground
-  const { mutate, isPending, isError, data } = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: (data: createPlaygroundSchemaType) =>
       createPlayGroundService(data),
     onSuccess: async (data) => {

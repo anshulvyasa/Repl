@@ -1,4 +1,5 @@
-import { Prisma, prisma } from "@repo/db";
+import { prisma } from "@repo/db/jsclient";
+import { Prisma } from "@repo/db";
 import { Request, Response } from "express";
 import {
   readTemplateStructureFromJson,

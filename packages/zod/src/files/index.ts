@@ -26,6 +26,8 @@ export const TemplateFolderSchema: z.ZodType<TemplateFolder> = z.lazy(() =>
   })
 );
 
+export type TemplateFolderSchemaType = z.infer<typeof TemplateFolderSchema>;
+
 export const TemplateItemSchema = z.union([
   TemplateFileSchema,
   TemplateFolderSchema,
