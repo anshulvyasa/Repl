@@ -18,10 +18,31 @@ export const editPlaygroundSchema = z.object({
   description: z.string().nonempty(),
 });
 
-export type editPlaygroundSchemaType=z.infer<typeof editPlaygroundSchema>;
+export type editPlaygroundSchemaType = z.infer<typeof editPlaygroundSchema>;
 
 // *************************************************************************************************************************************************************************
 // Client Side Schemas
+export const TemplateEnum = z.enum([
+  "REACT",
+  "NEXT",
+  "EXPRESS",
+  "ANGULAR",
+  "VUE",
+  "HONO",
+]);
+
+export const selectedPlaygroundSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  template: TemplateEnum,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  userId: z.string(),
+});
+
+export type selectedPlaygroundSchemaType = z.infer<typeof selectedPlaygroundSchema>;
+
 
 const userSchema = z.object({
   createdAt: z.string(),

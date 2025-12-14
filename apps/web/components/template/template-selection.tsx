@@ -15,7 +15,7 @@ const templates: TemplateOption[] = [
     category: "frontend",
   },
   {
-    id: "nextjs",
+    id: "next",
     name: "Next.js",
     description:
       "The React framework for production with server-side rendering and static site generation",

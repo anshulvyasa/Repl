@@ -4,6 +4,7 @@ import dialogReducer from "./features/dialog/index";
 import playgroundReducer from "./features/projects/index";
 import editPlaygroundDialogStateSlice from "./features/editdialog/index";
 import playgroundTemplateFilesReducer from "./features/playground-file-data/index";
+import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
 
 export const makeStore = () => {
   return configureStore({
@@ -13,6 +14,7 @@ export const makeStore = () => {
       playgrounds: playgroundReducer,
       editDialogState: editPlaygroundDialogStateSlice,
       playgroundTemplateFiles: playgroundTemplateFilesReducer,
+      selectedPlaygroundInfo: selectedPlaygroundInfoReducer
     },
   });
 };

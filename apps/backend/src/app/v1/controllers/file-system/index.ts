@@ -78,8 +78,10 @@ export const getPlaygroundFiles = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       files: playgroundTemplateFiles,
+      playground: playground
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       error: "Error while fetching The Playground Template Files",
