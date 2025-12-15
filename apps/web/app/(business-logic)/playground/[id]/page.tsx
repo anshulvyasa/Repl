@@ -5,18 +5,22 @@ import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
+import { sortTemplateTree } from "@/lib/utils";
 import { getPlaygroundTemplateFiles } from "@/services";
-import { TemplateFolderSchema } from "@repo/zod/files";
+import { TemplateFolderSchema, } from "@repo/zod/files";
 import { selectedPlaygroundSchema } from "@repo/zod/playground";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+
 
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
   const { updatePlaygroundTemplateFiles, templatePlaygroundSelector } =
     useTemplatePlayground();
   const { updateSelectedPlaygroundFn, selectedPlayground } = useSelectedPlaygroundInfo();
+  const [sidebarWidth, setSidebarWidth] = useState<number>(260);
 
   useEffect(() => {
     async function fetchData() {
@@ -28,7 +32,12 @@ const Playground = () => {
         updateSelectedPlaygroundFn(parsedSelectedPlayground.data)
       }
 
-      if (parsedRes.success) updatePlaygroundTemplateFiles(parsedRes.data);
+      if (parsedRes.success) {
+        parsedRes.data.folderName = parsedSelectedPlayground.data?.title as string;
+        sortTemplateTree(parsedRes.data.items);
+
+        updatePlaygroundTemplateFiles(parsedRes.data);
+      }
       else toast.error("Some Error Occured at the client side");
     }
 
@@ -38,8 +47,8 @@ const Playground = () => {
 
   return (
     <TooltipProvider>
-      <TemplateFileTree />
-      <SidebarInset>
+      <TemplateFileTree sidebarWidth={sidebarWidth} setSidebarWidth={setSidebarWidth} />
+      <SidebarInset >
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex flex-1 items-center gap-2">

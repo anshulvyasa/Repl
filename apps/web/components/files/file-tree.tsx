@@ -55,7 +55,7 @@ const RenderFolder = ({
     level: number;
     path: string;
 }) => {
-    const [isOpen, setIsOpen] = useState(level < 2);
+    const [isOpen, setIsOpen] = useState(level < 1);
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
