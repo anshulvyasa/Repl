@@ -82,7 +82,7 @@ const SidebarComponent = ({
       <SidebarHeader>
         <div className="flex items-center gap-1 py-2 px-1">
           <Image src={"./logo.svg"} alt="R" height={40} width={40} />
-          <span className="font-bold text-gray-700 text-xl">Repl</span>
+          <span className="font-bold text-gray-700 dark:text-white text-xl">Repl</span>
         </div>
       </SidebarHeader>
 
@@ -145,27 +145,27 @@ const SidebarComponent = ({
                 {recentPlayGround.length === 0
                   ? null
                   : recentPlayGround.map((playground) => {
-                      const IconComponent =
-                        lucideIconMap[playground.icon] || Code2;
-                      return (
-                        <SidebarMenuItem key={playground.id}>
-                          <SidebarMenuButton
-                            asChild
-                            isActive={
-                              pathname === `/playground/${playground.id}`
-                            }
-                            tooltip={playground.name}
-                          >
-                            <Link href={`/playground/${playground.id}`}>
-                              {IconComponent && (
-                                <IconComponent className="h-4 w-4" />
-                              )}
-                              <span>{playground.name}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
+                    const IconComponent =
+                      lucideIconMap[playground.icon] || Code2;
+                    return (
+                      <SidebarMenuItem key={playground.id}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            pathname === `/playground/${playground.id}`
+                          }
+                          tooltip={playground.name}
+                        >
+                          <Link href={`/playground/${playground.id}`}>
+                            {IconComponent && (
+                              <IconComponent className="h-4 w-4" />
+                            )}
+                            <span>{playground.name}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild tooltip="View all">
                     <Link href="/playgrounds">
