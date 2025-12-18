@@ -43,11 +43,12 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           PORT: ${{ secrets.PORT }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ORIGIN: ${{ secrets.ORIGIN }}
         with:
           host: ${{ secrets.HOST_IP }}
           username: ${{ env.VIRTUAL_MACHINE_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME,AUTH_SECRET,PORT,DATABASE_URL
+          envs: DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME,AUTH_SECRET,PORT,DATABASE_URL,ORIGIN
           script: |
             echo "Stopping brepl existing container..."
             sudo docker stop $DOCKER_IMAGE_NAME || true
@@ -64,7 +65,9 @@ jobs:
                -e DATABASE_URL=$DATABASE_URL \
                -e AUTH_SECRET=$AUTH_SECRET \
                -e PORT=$PORT \
-               $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
+               -e ORIGIN=$ORIGIN \
+               --restart-unless-stopped \
+                $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
 
             echo "Verifying Deployment"
             sudo docker ps
