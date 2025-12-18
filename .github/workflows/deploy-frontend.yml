@@ -56,8 +56,8 @@ jobs:
                   envs: AUTH_SECRET,AUTH_GOOGLE_ID,AUTH_GOOGLE_SECRET,AUTH_GITHUB_ID,AUTH_GITHUB_SECRET,AUTH_RESEND_KEY,DATABASE_URL,DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME
                   script: |
                       echo "Stopping and Removing old Container"
-                      sudo docker stop $DOCKER_IMAGE_NAME:latest || true
-                      sudo docker rm   $DOCKER_IMAGE_NAME:latest || true
+                      sudo docker stop $DOCKER_IMAGE_NAME || true
+                      sudo docker rm   $DOCKER_IMAGE_NAME || true
 
                       echo "Removing old repl Image" 
                       sudo docker rmi $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest || true
@@ -66,7 +66,7 @@ jobs:
                       sudo docker pull $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
 
                       echo "Starting new Frontend Container"
-                      sudo docker run -d --name $DOCKER_IMAGE_NAME:latest -p 3000:3000 \
+                      sudo docker run -d --name $DOCKER_IMAGE_NAME -p 3000:3000 \
                           -e DATABASE_URL=$DATABASE_URL \
                           -e AUTH_SECRET=$AUTH_SECRET \
                           -e AUTH_GOOGLE_ID=$AUTH_GOOGLE_ID \
