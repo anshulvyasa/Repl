@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -184,10 +184,7 @@ const SidebarComponent = ({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sign-out" onClick={() => {
-              signOut();
-              redirect('/');
-            }}>
+            <SidebarMenuButton asChild tooltip="Sign-out" onClick={() => signOut({ callbackUrl: "/" })}>
               <LogOut className="h-4 w-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
