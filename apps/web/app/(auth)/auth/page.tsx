@@ -8,7 +8,7 @@ import React from "react";
 const AuthPage = async () => {
   const session = await auth();
 
-  if (session) return redirect("/dashboard");
+  if (session?.user) return redirect("/dashboard");
 
   return (
     <React.Fragment>
