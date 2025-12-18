@@ -8,6 +8,18 @@ import { prisma } from "@repo/db";
 
 const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
+  cookies: {
+    sessionToken: {
+      name: "__Secure-authjs.session-token",
+      options: {
+        domain: ".techynimbus.com",
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+      },
+    }
+  },
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,

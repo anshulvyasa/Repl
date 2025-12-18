@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -22,13 +22,13 @@ import {
   Code2,
   Compass,
   Database,
-  Divide,
   FlameIcon,
   FolderPlus,
   History,
   Home,
   LayoutDashboard,
   Lightbulb,
+  LogOut,
   LucideIcon,
   Plus,
   Settings,
@@ -36,6 +36,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 interface PlaygroundData {
   id: string;
@@ -182,6 +183,15 @@ const SidebarComponent = ({
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Sign-out" onClick={() => {
+              signOut();
+              redirect('/');
+            }}>
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
               <Link href="/settings">
