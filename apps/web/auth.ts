@@ -19,7 +19,7 @@ const authOptions: NextAuthConfig = {
     }),
     Resend({
       apiKey: process.env.AUTH_RESEND_KEY,
-      from: "onboarding@resend.dev",
+      from: "Auth <no-reply@repl.techynimbus.com>",
     }),
   ],
   session: { strategy: "jwt" },
