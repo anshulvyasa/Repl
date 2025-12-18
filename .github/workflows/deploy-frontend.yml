@@ -52,7 +52,7 @@ jobs:
               with:
                   host: ${{ secrets.HOST_IP }}
                   key: ${{ secrets.SSH_KEY }}
-                  username: ${{ env.DOCKER_IMAGE_NAME }}
+                  username: ${{ env.VIRTUAL_MACHINE_USERNAME }}
                   envs: AUTH_SECRET,AUTH_GOOGLE_ID,AUTH_GOOGLE_SECRET,AUTH_GITHUB_ID,AUTH_GITHUB_SECRET,AUTH_RESEND_KEY,DATABASE_URL,DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME
                   script: |
                       echo "Stopping and Removing old Container"
