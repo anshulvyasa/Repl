@@ -47,7 +47,6 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           username: ${{ env.VIRTUAL_MACHINE_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           envs: DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME,AUTH_SECRET,PORT,DATABASE_URL
           script: |
             echo "Stopping brepl existing container..."
