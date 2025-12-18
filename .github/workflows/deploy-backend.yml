@@ -1,0 +1,73 @@
+name: deploy backend
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+
+env:
+    DOCKER_IMAGE_NAME: brepl
+    VIRTUAL_MACHINE_USERNAME: ubuntu
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v2
+
+            - name: Set up docker Buildx
+              uses: docker/setup-buildx-action@v2
+
+            - name: login in to docker hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+            - name: Build and push Docker Image
+              uses: docker/build-push-action@v2
+              with:
+                  context: .
+                  file: ./docker-files/dockerfile-frontend
+                  push: true
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
+            - name: Deploy to Virtual Machine
+              uses: appleboy/ssh-action@master
+              env:
+                  DOCKER_IMAGE_NAME: ${{ env.DOCKER_IMAGE_NAME }}
+                  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+                  PORT: ${{ secrets.PORT }}
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              with:
+                  host: ${{ secrets.HOST_IP }}
+                  username: ${{ env.VIRTUAL_MACHINE_USERNAME }}
+                  key: ${{ secrets.SSH_KEY }}
+                  envs: DOCKER_IMAGE_NAME,DOCKER_HUB_USERNAME,AUTH_SECRET,PORT,DATABASE_URL
+                  script: |
+                    echo "Stopping brepl existing container..."
+                    sudo docker stop $DOCKER_IMAGE_NAME || true
+                    sudo docker rm $DOCKER_IMAGE_NAME || true
+
+                    echo "Removing old brepl image..."
+                    sudo docker rmi $DOCKER_IMAGE_NAME
+
+                    echo "Pulling new brepl image..."
+                    sudo docker pull $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
+
+                    echo "Starting new brepl container"
+                    sudo docker run -d --name $DOCKER_IMAGE_NAME -p 5000:5000 \
+                       -e DATABASE_URL=$DATABASE_URL \
+                       -e AUTH_SECRET=$AUTH_SECRET \
+                       -e PORT=$PORT \
+                       $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
+
+                    echo "Verifying Deployment"
+                    sudo docker ps
+                    
+                    echo "Deployment Successful"
+

@@ -47,7 +47,9 @@ export const CreatePlayGroundController = async (
       },
     });
   } catch (err) {
+    console.error("The Error is ", err);
     res.status(500).json({
+
       success: false,
       error: "Error while Creating The Playground",
     });
@@ -93,6 +95,7 @@ export const getAllPlaygroundForUser = async (req: Request, res: Response) => {
       },
     });
   } catch (err) {
+    console.error(err)
     res.status(500).json({
       success: false,
       data: {

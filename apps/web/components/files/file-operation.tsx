@@ -1,13 +1,18 @@
-import { FilePlus, FolderPlus, Plus } from "lucide-react";
+import { Edit3, FilePlus, FolderPlus, Plus, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { SidebarMenuAction } from "../ui/sidebar";
 
-const FilesOperation = () => {
+interface FileOperationProps {
+  isFolder: boolean;
+}
+
+const FilesOperation = ({ isFolder }: FileOperationProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -17,13 +22,22 @@ const FilesOperation = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>
+        {isFolder && <><DropdownMenuItem>
           <FilePlus className="h-4 w-4 mr-2" />
           <span>Add File</span>
         </DropdownMenuItem>
+          <DropdownMenuItem>
+            <FolderPlus className="h-4 w-4 mr-2" />
+            <span>Add Folder</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator /></>}
         <DropdownMenuItem>
-          <FolderPlus className="h-4 w-4 mr-2" />
-          <span>Add Folder</span>
+          <Edit3 className="h-4 w-4 mr-2" />
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Trash2 className="h-4 w-4 mr-2" />
+          Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -65,7 +65,7 @@ export const TemplateFileTree = ({
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-  }, [sidebarWidth, setIsResizing, setSidebarWidth]);
+  }, [sidebarWidth, setIsResizing]);
 
   return (
     <div

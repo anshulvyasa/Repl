@@ -8,6 +8,9 @@ import {
 import fs from "fs/promises";
 import path from "path";
 import { templatePaths } from "../../lib/template";
+import { checkPlaygroundId } from "../../lib/utils";
+import { TemplateFileSchema } from "@repo/zod/files";
+
 
 export const getPlaygroundFiles = async (req: Request, res: Response) => {
   // checking if we have the current user
@@ -81,10 +84,40 @@ export const getPlaygroundFiles = async (req: Request, res: Response) => {
       playground: playground
     });
   } catch (error) {
-    console.log(error)
     res.status(500).json({
       success: false,
       error: "Error while fetching The Playground Template Files",
     });
   }
 };
+
+
+export const renameFiles = async (req: Request, res: Response) => {
+  const { playgroundId } = req.params;
+  const { path, newName } = req.body;
+
+  const playgroundIdCheckRes = checkPlaygroundId(playgroundId as string);
+
+  if (playgroundIdCheckRes) {
+    res.status(400).json(playgroundIdCheckRes);
+    return;
+  }
+
+  try {
+      const playgroundFiles=await prisma.templateFile.findUnique({
+        where:{
+          playgroundId
+        }
+      })
+
+      // const parsedPlaygroundFiles=await TemplateFileSchema.safeParse();
+
+      
+  }
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Error while Renaming"
+    })
+  }
+}

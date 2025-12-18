@@ -38,7 +38,7 @@ const RenderFile = ({ file }: { file: TemplateFile }) => {
             </SidebarMenuButton>
 
             <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                <FilesOperation />
+                <FilesOperation isFolder={false} />
             </div>
         </SidebarMenuItem>
 
@@ -72,7 +72,7 @@ const RenderFolder = ({
                 </CollapsibleTrigger>
 
                 <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                    <FilesOperation />
+                    <FilesOperation isFolder={true} />
                 </div>
             </SidebarMenuItem>
 
