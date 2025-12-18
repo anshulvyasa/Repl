@@ -23,7 +23,7 @@ export const authMiddleWare = async (
     const decoded = await decode({
       token: sessionToken,
       secret: AUTH_SECRET as string,
-      salt: "authjs.session-token",
+      salt: "__Secure-authjs.session-token",
     });
 
     if (!decoded) {
