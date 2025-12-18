@@ -184,10 +184,14 @@ const SidebarComponent = ({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sign-out" onClick={() => signOut({ callbackUrl: "/" })}>
+            <SidebarMenuButton
+              tooltip="Sign-out"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            >
               <LogOut className="h-4 w-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
+
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
