@@ -48,7 +48,9 @@ const ResendAuth = () => {
       <Button
         type="submit"
         disabled={loading}
-        className="px-5 py-2 w-full -mt-1 mb-4 text-[14px] sm:text-[16px] font-[500] cursor-pointer"
+        size={"lg"}
+        className="mb-4 w-full text-white bg-gradient-to-r from-rose-500 to-pink-500  hover:from-rose-600 hover:to-pink-600 dark:from-rose-500 dark:to-pink-500 
+                      border-0 shadow-sm shadow-rose-500/30  dark:shadow-rose-500/20 transition-all duration-300  hover:scale-[1.02] hover:shadow-rose-500/50 "
       >
         {loading ? "Sending..." : "Send Email"}
       </Button>

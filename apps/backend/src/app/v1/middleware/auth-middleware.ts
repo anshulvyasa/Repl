@@ -20,10 +20,13 @@ export const authMiddleWare = async (
   }
 
   try {
+    const isProduction = process.env.NODE_ENV === "production";
+    const cookieName = isProduction ? "__Secure-authjs.session-token" : "authjs.session-token";
+
     const decoded = await decode({
       token: sessionToken,
       secret: AUTH_SECRET as string,
-      salt: "__Secure-authjs.session-token",
+      salt: cookieName,
     });
 
     if (!decoded) {

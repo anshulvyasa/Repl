@@ -1,4 +1,3 @@
-// lib/auth.ts
 import NextAuth, { NextAuthConfig, NextAuthResult } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
@@ -6,19 +5,21 @@ import GitHub from "next-auth/providers/github";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@repo/db";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   cookies: {
     sessionToken: {
-      name: "__Secure-authjs.session-token",
+      name: isProduction ? "__Secure-authjs.session-token" : "authjs.session-token",
       options: {
-        domain: ".techynimbus.com",
+        domain: isProduction ? ".techynimbus.com" : undefined,
         httpOnly: true,
-        secure: true,
+        secure: isProduction,
         sameSite: "lax",
         path: "/",
       },
-    }
+    },
   },
   providers: [
     Google({
