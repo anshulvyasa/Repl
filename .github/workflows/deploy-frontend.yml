@@ -74,6 +74,7 @@ jobs:
                           -e AUTH_GITHUB_ID=$AUTH_GITHUB_ID \
                           -e AUTH_GITHUB_SECRET=$AUTH_GITHUB_SECRET \
                           -e AUTH_RESEND_KEY=$AUTH_RESEND_KEY \
+                          --restart unless-stopped \
                           $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME:latest
 
                        echo "Verifying Deployment"
