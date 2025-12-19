@@ -9,6 +9,7 @@ import fs from "fs/promises";
 import path from "path";
 import { templatePaths } from "../../lib/template";
 import { checkPlaygroundId } from "../../lib/utils";
+import { renameFilesOrFolder } from "@repo/utilities/files-operation";
 import { TemplateFileSchema } from "@repo/zod/files";
 
 
@@ -103,16 +104,38 @@ export const renameFiles = async (req: Request, res: Response) => {
     return;
   }
 
+  if (path.trim() === "" || newName.trim() === "") {
+    res.status(400).json({
+      success: false,
+      message: "Valid Path or Name is not provided"
+    })
+    return;
+  }
+
   try {
-      const playgroundFiles=await prisma.templateFile.findUnique({
-        where:{
-          playgroundId
-        }
-      })
+    const playgroundFiles = await prisma.templateFile.findUnique({
+      where: {
+        playgroundId
+      }
+    })
 
-      // const parsedPlaygroundFiles=await TemplateFileSchema.safeParse();
+    const parsedPlaygroundFiles = TemplateFileSchema.safeParse(playgroundFiles);
 
-      
+    if (!parsedPlaygroundFiles.success) {
+      throw new Error();
+    }
+
+    let heirarchy = path.split("\\").filter(Boolean);
+    renameFilesOrFolder(parsedPlaygroundFiles.data, heirarchy, 0, newName);
+
+    await prisma.templateFile.update({
+      where: {
+        playgroundId
+      },
+      data: {
+        content: parsedPlaygroundFiles.data
+      }
+    })
   }
   catch (error) {
     res.status(500).json({

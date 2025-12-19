@@ -1,22 +1,58 @@
-import { TemplateFile, TemplateFolder, TemplateItem } from "@repo/zod/files";
-import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from "../ui/sidebar";
-import { ChevronRight, File, Folder } from "lucide-react";
-import FilesOperation from "./file-operation";
-import { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { AddFileFolderAndRenameFileFolderSchemaType } from "@repo/zod/files-operation-queue";
+import { toast } from "sonner";
+import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
+import { useFileOperations } from "@/lib/redux/selectoranddispatcher/useFileOperation";
+import { RenderFile } from "./renderfiles";
+import { RenderFolder } from "./rederfolder";
+import { TemplateItem } from "@repo/zod/files";
+import { LoaderCircle } from "lucide-react";
+
 
 interface FileTreeProps {
     path: string;
     level: number;
-    data: TemplateItem;
+    data: TemplateItem | null;
 }
 
 const FileTree = ({ path, level, data }: FileTreeProps) => {
+
+    if (!data) {
+        return <div className="flex items-center ml-4 gap-2 mt-3">
+            <LoaderCircle className="animate-spin duration-200 transition-all h-5 w-5" />
+            <span className="font-bold">Loading...</span>
+        </div>
+    }
+
+    const { selectedPlayground } = useSelectedPlaygroundInfo();
+    const { addOpsToOpsQueue } = useFileOperations();
+
+    const handleRename = (newName: string, newPath: string) => {
+        if (newName.trim() === "") {
+            toast.error("Name can't be empty");
+            return;
+        }
+        if (!newName) {
+            toast.error("Name can't be null");
+            return;
+        }
+        if (!selectedPlayground?.id) {
+            toast.error("No Playground Selected");
+            return;
+        }
+
+        let ops: AddFileFolderAndRenameFileFolderSchemaType = {
+            playgroundId: selectedPlayground?.id,
+            path: newPath,
+            newName
+        };
+
+        addOpsToOpsQueue(ops);
+    }
+
+
     const isFile = "fileName" in data;
-
-
     if (isFile) {
-        return <RenderFile file={data} />
+        return <RenderFile file={data} path={path} handleRename={handleRename} />
     }
 
     return (
@@ -27,68 +63,6 @@ const FileTree = ({ path, level, data }: FileTreeProps) => {
 export default FileTree;
 
 
-const RenderFile = ({ file }: { file: TemplateFile }) => {
-    const filename = `${file.fileName}.${file.fileExtension}`;
-
-    return (
-        <SidebarMenuItem className="group/item flex items-center justify-between">
-            <SidebarMenuButton>
-                <File className="h-4 w-4 mr-2 shrink-0" />
-                <span>{filename}</span>
-            </SidebarMenuButton>
-
-            <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                <FilesOperation isFolder={false} />
-            </div>
-        </SidebarMenuItem>
-
-    );
-};
 
 
-const RenderFolder = ({
-    folder,
-    level,
-    path,
-}: {
-    folder: TemplateFolder;
-    level: number;
-    path: string;
-}) => {
-    const [isOpen, setIsOpen] = useState(level < 1);
 
-    return (
-        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <SidebarMenuItem className="group/item">
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                        <ChevronRight
-                            className={`mr-2 transition-transform ${isOpen ? "rotate-90" : ""
-                                }`}
-                        />
-                        <Folder className="h-4 w-4 mr-2 shrink-0" />
-                        <span>{folder.folderName}</span>
-                    </SidebarMenuButton>
-                </CollapsibleTrigger>
-
-                <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                    <FilesOperation isFolder={true} />
-                </div>
-            </SidebarMenuItem>
-
-
-            <CollapsibleContent>
-                <SidebarMenuSub>
-                    {folder.items.map((item, index) => (
-                        <FileTree
-                            key={index}
-                            path={`${path}/${folder.folderName}`}
-                            level={level + 1}
-                            data={item}
-                        />
-                    ))}
-                </SidebarMenuSub>
-            </CollapsibleContent>
-        </Collapsible>
-    );
-};

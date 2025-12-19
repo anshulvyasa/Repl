@@ -1,18 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TemplateFolderSchemaType } from "@repo/zod/files";
 
-const initialState: TemplateFolderSchemaType = {
+export type TemplateFilesTypes = TemplateFolderSchemaType | null;
+
+const initialState: TemplateFilesTypes = {
   folderName: "",
   items: [],
 };
 
 const playgroundTemplateFiles = createSlice({
   name: "playgroundTemplateSlice",
-  initialState,
+  initialState: initialState as TemplateFilesTypes,
   reducers: {
     addPlaygroundTemplateFiles(
       state,
-      action: PayloadAction<TemplateFolderSchemaType>
+      action: PayloadAction<TemplateFilesTypes>
     ) {
       return action.payload;
     },

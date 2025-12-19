@@ -7,12 +7,17 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { SidebarMenuAction } from "../ui/sidebar";
+import React from "react";
 
 interface FileOperationProps {
   isFolder: boolean;
+  setRenameState: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const FilesOperation = ({ isFolder }: FileOperationProps) => {
+const FilesOperation = ({ isFolder, setRenameState }: FileOperationProps) => {
+
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,7 +36,7 @@ const FilesOperation = ({ isFolder }: FileOperationProps) => {
             <span>Add Folder</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator /></>}
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setRenameState(true)}>
           <Edit3 className="h-4 w-4 mr-2" />
           Rename
         </DropdownMenuItem>

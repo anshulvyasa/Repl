@@ -118,7 +118,6 @@ export const TemplateFileTree = ({
         </SidebarContent>
       </Sidebar>
 
-      {/* Resize Handle */}
       <div
         onMouseDown={handleMouseDown}
         className="absolute right-[-4px] top-0 z-50 h-full w-2 cursor-col-resize"

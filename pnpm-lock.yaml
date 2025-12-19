@@ -29,6 +29,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@repo/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@repo/zod':
         specifier: workspace:*
         version: link:../../packages/zod
@@ -237,6 +240,15 @@ importers:
         version: 8.40.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.2)
 
   packages/typescript-config: {}
+
+  packages/utilities:
+    dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@repo/zod':
+        specifier: workspace:*
+        version: link:../zod
 
   packages/zod:
     dependencies:

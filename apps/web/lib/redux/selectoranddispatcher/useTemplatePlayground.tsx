@@ -8,7 +8,7 @@ export const useTemplatePlayground = () => {
     (state) => state.playgroundTemplateFiles
   );
 
-  const updatePlaygroundTemplateFiles = (files: TemplateFolderSchemaType) => {
+  const updatePlaygroundTemplateFiles = (files: TemplateFolderSchemaType|null) => {
     dispatch(addPlaygroundTemplateFiles(files));
   };
 

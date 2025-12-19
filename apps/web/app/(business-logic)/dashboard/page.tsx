@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react"; // Import useEffect
 import { AddNewButton } from "@/components/dashboard/add-new-button";
 import { AddRepo } from "@/components/dashboard/add-repo";
 import { DashBoardTable } from "@/components/dashboard/dashboard-table";
@@ -8,11 +9,11 @@ import { useProject } from "@/lib/redux/selectoranddispatcher/useProjects";
 
 const DashboardPage = () => {
   const { playgrounds } = useProject();
-
+  
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen mx-auto max-w-7xl px-4 py-10">
-      <div className="grid grid-cols-1 md:grid-cols-2  gap-6 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <AddNewButton />
         <AddRepo />
       </div>

@@ -3,4 +3,4 @@ import { AppDispatch, AppStore, RootState } from "./store";
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
-export const userAppStore = useStore.withTypes<AppStore>();
+export const useAppStore = useStore.withTypes<AppStore>();

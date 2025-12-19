@@ -41,6 +41,10 @@ const Playground = () => {
     }
 
     fetchData();
+
+    return () => {
+      updatePlaygroundTemplateFiles(null);
+    }
   }, [id]);
 
   return (

@@ -9,7 +9,8 @@
   },
   "exports": {
     "./playground": "./src/playground/index.ts",
-    "./files":"./src/files/index.ts"
+    "./files": "./src/files/index.ts",
+    "./files-operation-queue": "./src/files-operation-queue/index.ts"
   },
   "keywords": [],
   "author": "",

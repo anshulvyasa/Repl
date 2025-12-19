@@ -13,7 +13,7 @@ type PlaygroundItem = {
   id: string;
   title: string;
   template: string;
-  starmark?: { isMarked: boolean }[]; // as returned by your prisma include
+  starmark?: { isMarked: boolean }[]; 
 };
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

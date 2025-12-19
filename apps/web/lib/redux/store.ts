@@ -5,6 +5,8 @@ import playgroundReducer from "./features/projects/index";
 import editPlaygroundDialogStateSlice from "./features/editdialog/index";
 import playgroundTemplateFilesReducer from "./features/playground-file-data/index";
 import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
+import fileOperationQueueReducer from "./features/file-operation-queue/index"
+
 
 export const makeStore = () => {
   return configureStore({
@@ -14,10 +16,12 @@ export const makeStore = () => {
       playgrounds: playgroundReducer,
       editDialogState: editPlaygroundDialogStateSlice,
       playgroundTemplateFiles: playgroundTemplateFilesReducer,
-      selectedPlaygroundInfo: selectedPlaygroundInfoReducer
+      selectedPlaygroundInfo: selectedPlaygroundInfoReducer,
+      fileOperations: fileOperationQueueReducer
     },
   });
 };
+
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore["getState"]>;

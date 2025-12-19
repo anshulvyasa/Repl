@@ -11,5 +11,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     storeRef.current = makeStore();
   }
 
+  if (storeRef.current) {
+    
+  }
+
   return <Provider store={storeRef.current}>{children}</Provider>;
 };
