@@ -8,9 +8,6 @@ import {
 import fs from "fs/promises";
 import path from "path";
 import { templatePaths } from "../../lib/template";
-import { checkPlaygroundId } from "../../lib/utils";
-import { renameFilesOrFolder } from "@repo/utilities/files-operation";
-import { TemplateFileSchema } from "@repo/zod/files";
 
 
 export const getPlaygroundFiles = async (req: Request, res: Response) => {

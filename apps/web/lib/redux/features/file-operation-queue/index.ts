@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileOperationSchemaType, FileOperationSchemaQueueType, FileOperationSchemaQueue } from '@repo/zod/files-operation-queue'
 import { AppThunk } from '../../store';
-import { renameFilesOrFolder } from "@repo/utilities/files-operation"
 import { deleteFiles, renameFiles } from '../playground-file-data';
 
 const defaultState: FileOperationSchemaQueueType = {
