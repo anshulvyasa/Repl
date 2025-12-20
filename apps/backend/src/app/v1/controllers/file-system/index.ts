@@ -54,13 +54,13 @@ export const getPlaygroundFiles = async (req: Request, res: Response) => {
     if (!playgroundTemplateFiles) {
       const templatePath = path.join(
         process.cwd(),
-        templatePaths[playground.template]
+        templatePaths[playground.template as keyof typeof templatePaths]
       );
 
       const outputPath = path.join(
         process.cwd(),
         "/output",
-        templatePaths[playground.template]
+        templatePaths[playground.template as keyof typeof templatePaths]
       );
 
       await saveTemplateStructureToJson(templatePath, outputPath);

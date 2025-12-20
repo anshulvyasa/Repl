@@ -33,6 +33,7 @@ jobs:
           context: .
           file: ./docker-files/dockerfile.backend
           push: true
+          no-cache: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
 
       - name: Deploy to Virtual Machine

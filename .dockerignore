@@ -3,6 +3,7 @@ node_modules
 .gitignore
 .vscode
 .turbo
+.next
 dist
 build
 coverage

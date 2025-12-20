@@ -32,6 +32,7 @@ jobs:
                   context: .
                   file: ./docker-files/dockerfile.frontend
                   push: true
+                  no-cache: true
                   tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
                   build-args: |
                       NEXT_PUBLIC_BACKEND_DOMAIN=${{ secrets.NEXT_PUBLIC_BACKEND_DOMAIN }}
