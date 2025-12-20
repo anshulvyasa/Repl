@@ -12,9 +12,10 @@ import React from "react";
 interface FileOperationProps {
   isFolder: boolean;
   setRenameState: React.Dispatch<React.SetStateAction<boolean>>
+  setDeleteState: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const FilesOperation = ({ isFolder, setRenameState }: FileOperationProps) => {
+const FilesOperation = ({ isFolder, setRenameState, setDeleteState }: FileOperationProps) => {
 
 
 
@@ -40,7 +41,7 @@ const FilesOperation = ({ isFolder, setRenameState }: FileOperationProps) => {
           <Edit3 className="h-4 w-4 mr-2" />
           Rename
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setDeleteState(true)}>
           <Trash2 className="h-4 w-4 mr-2" />
           Delete
         </DropdownMenuItem>

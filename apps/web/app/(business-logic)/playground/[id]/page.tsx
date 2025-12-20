@@ -13,6 +13,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/lib/redux/hooks";
+import { localFileUpdateThunk } from "@/lib/redux/features/file-operation-queue";
 
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +23,7 @@ const Playground = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState<number>(260);
   const [isResizing, setIsResizing] = useState(false);
+  const store = useAppStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -36,6 +39,7 @@ const Playground = () => {
         parsedRes.data.folderName = parsedSelectedPlayground.data?.title as string;
         sortTemplateTree(parsedRes.data.items);
         updatePlaygroundTemplateFiles(parsedRes.data);
+        store.dispatch(localFileUpdateThunk());
       }
       else toast.error("Some Error Occured at the client side");
     }

@@ -16,7 +16,7 @@ export const FileOperationSchema = z.union([
 ])
 
 export type AddFileFolderAndRenameFileFolderSchemaType = z.infer<typeof AddFileFolderAndRenameFileFolderSchema>;
-export type DeleteFileFolderSchema = z.infer<typeof DeleteFileFolderSchema>;
+export type DeleteFileFolderSchemaType = z.infer<typeof DeleteFileFolderSchema>;
 export type FileOperationSchemaType = z.infer<typeof FileOperationSchema>;
 
 

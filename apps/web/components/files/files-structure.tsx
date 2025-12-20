@@ -3,11 +3,12 @@
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, useSidebar } from "../ui/sidebar";
 import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
-import React, { useMemo, useCallback, useContext } from "react";
+import React, { useMemo, useCallback } from "react";
 import FileTree from "./file-tree";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { FilePlus, FolderPlus, Plus } from "lucide-react";
+import { FilePlus, FolderPlus, LoaderCircle, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 
 interface TemplateFileTreeProps {
   sidebarWidth: number;
@@ -23,7 +24,7 @@ export const TemplateFileTree = ({
   setIsResizing
 }: TemplateFileTreeProps) => {
   const { selectedPlayground } = useSelectedPlaygroundInfo();
-  const { templatePlaygroundSelector } = useTemplatePlayground();
+  const { templatePlaygroundSelector} = useTemplatePlayground();
   const sidebarContext = useSidebar();
 
 
@@ -113,7 +114,14 @@ export const TemplateFileTree = ({
           </SidebarGroup>
 
           <SidebarGroupContent className={cn(sidebarWidth < 50 && "hidden")}>
-            <FileTree path="" level={0} data={templatePlaygroundSelector} />
+            {!templatePlaygroundSelector ?
+              <>
+                <div className="flex items-center ml-4 gap-2 mt-3">
+                  <LoaderCircle className="animate-spin duration-200 transition-all h-5 w-5" />
+                  <span className="font-bold">Loading...</span>
+                </div>
+              </> :
+              <FileTree path="" level={0} data={templatePlaygroundSelector} />}
           </SidebarGroupContent>
         </SidebarContent>
       </Sidebar>

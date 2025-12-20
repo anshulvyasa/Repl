@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileOperationSchemaType, FileOperationSchemaQueueType, FileOperationSchemaQueue } from '@repo/zod/files-operation-queue'
+import { AppThunk } from '../../store';
+import { renameFilesOrFolder } from "@repo/utilities/files-operation"
+import { deleteFiles, renameFiles } from '../playground-file-data';
 
 const defaultState: FileOperationSchemaQueueType = {
     items: [],
@@ -44,6 +47,40 @@ const fileOperationQueueSlice = createSlice({
         }
     }
 })
+
+export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
+    const fileOpsQueue = getState().fileOperations;
+
+    if (fileOpsQueue.head == -1) return;
+
+    const currentSelectedPlayground = getState().selectedPlaygroundInfo;
+    if (!currentSelectedPlayground?.id) return;
+
+    for (const item of fileOpsQueue.items) {
+        // handling renaming of current playground
+        if (currentSelectedPlayground.id === item.playgroundId && "newName" in item) {
+            const path = item.path.split('/').filter(Boolean);
+            const newName = item.newName;
+
+            if (path[path.length - 1]?.trim() === newName.trim()) continue;
+
+            dispatch(renameFiles({ path, newName }))
+        }
+
+        // handling delete Files
+        if (currentSelectedPlayground.id === item.playgroundId && !("newName" in item)) {
+            const path = item.path.split("/").filter(Boolean);
+            dispatch(deleteFiles({ path }));
+        }
+
+    }
+}
+
+
+
+// Todo : backend logic
+export const fileQueueThunk = (): AppThunk => (dispatch, getState) => {
+}
 
 export default fileOperationQueueSlice.reducer;
 export const { addOperationToOpsQueue, removeOperationFromOpsQueue, clearOperationQueue } = fileOperationQueueSlice.actions;

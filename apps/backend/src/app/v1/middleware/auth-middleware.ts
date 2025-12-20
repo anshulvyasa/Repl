@@ -1,4 +1,3 @@
-import { decode } from "@auth/core/jwt";
 import { NextFunction, Request, Response } from "express";
 
 export const authMiddleWare = async (
@@ -6,6 +5,7 @@ export const authMiddleWare = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { decode } = await import("@auth/core/jwt");
   const sessionToken =
     req.cookies["authjs.session-token"] ||
     req.cookies["__Secure-authjs.session-token"];

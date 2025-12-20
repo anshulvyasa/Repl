@@ -7,9 +7,9 @@ export function renameFilesOrFolder(
     newName: string
 ) {
     if (index === path.length - 1) {
-        if ("folderName" in playground && playground.folderName === path[index]) {
+        if ("folderName" in playground) {
             playground.folderName = newName;
-        } else if ("fileName" in playground && `${playground.fileName}.${playground.fileExtension}` === path[index]) {
+        } else if ("fileName" in playground) {
             const parts = newName.split(".");
             playground.fileName = parts[0] as string;
             playground.fileExtension = parts.slice(1).join(".");
@@ -33,5 +33,35 @@ export function renameFilesOrFolder(
             renameFilesOrFolder(item, path, index + 1, newName);
             return;
         }
+    }
+}
+
+export function deleteFilesOrFolder(parentFolder: TemplateItem, path: string[], index: number) {
+    if (!("folderName" in parentFolder)) return;
+
+    if (index === path.length - 2) {
+        const itemToDeleteName = path[index + 1];
+
+        const itemIndex = parentFolder.items.findIndex((item) => {
+            if ("folderName" in item) {
+                return item.folderName === itemToDeleteName;
+            } else {
+                return `${item.fileName}.${item.fileExtension}` === itemToDeleteName;
+            }
+        });
+
+        if (itemIndex !== -1) {
+            parentFolder.items.splice(itemIndex, 1);
+        }
+        return;
+    }
+
+    const nextFolderName = path[index + 1];
+    const nextFolder = parentFolder.items.find((item) =>
+        "folderName" in item && item.folderName === nextFolderName
+    );
+
+    if (nextFolder) {
+        deleteFilesOrFolder(nextFolder, path, index + 1);
     }
 }

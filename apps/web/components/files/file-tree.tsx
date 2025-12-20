@@ -1,4 +1,4 @@
-import { AddFileFolderAndRenameFileFolderSchemaType } from "@repo/zod/files-operation-queue";
+import { AddFileFolderAndRenameFileFolderSchemaType, DeleteFileFolderSchemaType } from "@repo/zod/files-operation-queue";
 import { toast } from "sonner";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
 import { useFileOperations } from "@/lib/redux/selectoranddispatcher/useFileOperation";
@@ -6,7 +6,7 @@ import { RenderFile } from "./renderfiles";
 import { RenderFolder } from "./rederfolder";
 import { TemplateItem } from "@repo/zod/files";
 import { LoaderCircle } from "lucide-react";
-
+import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
 
 interface FileTreeProps {
     path: string;
@@ -14,7 +14,11 @@ interface FileTreeProps {
     data: TemplateItem | null;
 }
 
-const FileTree = ({ path, level, data }: FileTreeProps) => {
+const FileTree = ({ path, level, data, }: FileTreeProps) => {
+
+    const { selectedPlayground } = useSelectedPlaygroundInfo();
+    const { addOpsToOpsQueue } = useFileOperations();
+    const { renameTemplateFilesOrFolder, deleteTemplateFiles } = useTemplatePlayground();
 
     if (!data) {
         return <div className="flex items-center ml-4 gap-2 mt-3">
@@ -22,9 +26,6 @@ const FileTree = ({ path, level, data }: FileTreeProps) => {
             <span className="font-bold">Loading...</span>
         </div>
     }
-
-    const { selectedPlayground } = useSelectedPlaygroundInfo();
-    const { addOpsToOpsQueue } = useFileOperations();
 
     const handleRename = (newName: string, newPath: string) => {
         if (newName.trim() === "") {
@@ -46,17 +47,35 @@ const FileTree = ({ path, level, data }: FileTreeProps) => {
             newName
         };
 
+        const path = newPath.split("/").filter(Boolean);
         addOpsToOpsQueue(ops);
+        renameTemplateFilesOrFolder(path, newName)
+    }
+
+    const handleDelete = (newPath: string) => {
+        if (!selectedPlayground?.id) {
+            toast.error("No Playground Selected");
+            return;
+        }
+
+        const delOps: DeleteFileFolderSchemaType = {
+            playgroundId: selectedPlayground.id,
+            path: newPath
+        }
+
+        addOpsToOpsQueue(delOps);
+        const path = newPath.split("/").filter(Boolean);
+        deleteTemplateFiles(path);
     }
 
 
     const isFile = "fileName" in data;
     if (isFile) {
-        return <RenderFile file={data} path={path} handleRename={handleRename} />
+        return <RenderFile file={data} path={path} handleRename={handleRename} handleDelete={handleDelete} />
     }
 
     return (
-        <RenderFolder folder={data} level={level} path={path} />
+        <RenderFolder folder={data} level={level} path={path} handleRename={handleRename} handleDelete={handleDelete} />
     )
 }
 

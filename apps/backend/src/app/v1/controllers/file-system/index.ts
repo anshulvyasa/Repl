@@ -93,54 +93,54 @@ export const getPlaygroundFiles = async (req: Request, res: Response) => {
 };
 
 
-export const renameFiles = async (req: Request, res: Response) => {
-  const { playgroundId } = req.params;
-  const { path, newName } = req.body;
+// export const renameFiles = async (req: Request, res: Response) => {
+//   const { playgroundId } = req.params;
+//   const { path, newName } = req.body;
 
-  const playgroundIdCheckRes = checkPlaygroundId(playgroundId as string);
+//   const playgroundIdCheckRes = checkPlaygroundId(playgroundId as string);
 
-  if (playgroundIdCheckRes) {
-    res.status(400).json(playgroundIdCheckRes);
-    return;
-  }
+//   if (playgroundIdCheckRes) {
+//     res.status(400).json(playgroundIdCheckRes);
+//     return;
+//   }
 
-  if (path.trim() === "" || newName.trim() === "") {
-    res.status(400).json({
-      success: false,
-      message: "Valid Path or Name is not provided"
-    })
-    return;
-  }
+//   if (path.trim() === "" || newName.trim() === "") {
+//     res.status(400).json({
+//       success: false,
+//       message: "Valid Path or Name is not provided"
+//     })
+//     return;
+//   }
 
-  try {
-    const playgroundFiles = await prisma.templateFile.findUnique({
-      where: {
-        playgroundId
-      }
-    })
+//   try {
+//     const playgroundFiles = await prisma.templateFile.findUnique({
+//       where: {
+//         playgroundId
+//       }
+//     })
 
-    const parsedPlaygroundFiles = TemplateFileSchema.safeParse(playgroundFiles);
+//     const parsedPlaygroundFiles = TemplateFileSchema.safeParse(playgroundFiles);
 
-    if (!parsedPlaygroundFiles.success) {
-      throw new Error();
-    }
+//     if (!parsedPlaygroundFiles.success) {
+//       throw new Error();
+//     }
 
-    let heirarchy = path.split("\\").filter(Boolean);
-    renameFilesOrFolder(parsedPlaygroundFiles.data, heirarchy, 0, newName);
+//     let heirarchy = path.split("\\").filter(Boolean);
+//     renameFilesOrFolder(parsedPlaygroundFiles.data, heirarchy, 0, newName);
 
-    await prisma.templateFile.update({
-      where: {
-        playgroundId
-      },
-      data: {
-        content: parsedPlaygroundFiles.data
-      }
-    })
-  }
-  catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Error while Renaming"
-    })
-  }
-}
+//     await prisma.templateFile.update({
+//       where: {
+//         playgroundId
+//       },
+//       data: {
+//         content: parsedPlaygroundFiles.data
+//       }
+//     })
+//   }
+//   catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Error while Renaming"
+//     })
+//   }
+// }
