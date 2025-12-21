@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileOperationSchemaType, FileOperationSchemaQueueType, FileOperationSchemaQueue } from '@repo/zod/files-operation-queue'
 import { AppThunk } from '../../store';
 import { deleteFiles, renameFiles } from '../playground-file-data';
+import { log } from 'console';
 
 const defaultState: FileOperationSchemaQueueType = {
     items: [],
@@ -11,10 +12,14 @@ const defaultState: FileOperationSchemaQueueType = {
 const calcInitialState = () => {
     try {
         const serializeObject = localStorage.getItem('fileops');
+
         if (serializeObject === null) return defaultState;
+        console.log("Serial Objecyt is ", serializeObject)
 
         const parsedSerializeObject = FileOperationSchemaQueue.safeParse(JSON.parse(serializeObject))
         if (parsedSerializeObject.error) return defaultState;
+
+        console.log(parsedSerializeObject.data)
 
         return parsedSerializeObject.data;
     }
@@ -57,6 +62,7 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
 
     for (const item of fileOpsQueue.items) {
         // handling renaming of current playground
+        console.log("items os file Ops is : ", item)
         if (currentSelectedPlayground.id === item.playgroundId && "newName" in item) {
             const path = item.path.split('/').filter(Boolean);
             const newName = item.newName;
@@ -67,7 +73,7 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
         }
 
         // handling delete Files
-        if (currentSelectedPlayground.id === item.playgroundId && !("newName" in item)) {
+        if (currentSelectedPlayground.id === item.playgroundId && !("newName" in item) && !("data" in item)) {
             const path = item.path.split("/").filter(Boolean);
             dispatch(deleteFiles({ path }));
         }

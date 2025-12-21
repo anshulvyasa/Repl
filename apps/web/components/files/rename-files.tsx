@@ -41,7 +41,7 @@ export const RenameFiles = ({ originalName, handleRename, path, renameState, set
         onChange={(e) => setRenameValue(e.target.value)}
         ref={renameValueRef}
         onKeyDown={handleRenameOnKeyDown}
-        className="h-6 w-full min-w-0 bg-transparent text-foreground border-0 px-1 py-0 text-sm focus:outline-none"
+        className="h-6 w-full overflow-hidden min-w-0 bg-transparent text-foreground border-0 px-1 py-0 text-sm focus:outline-none"
         spellCheck={false}
         autoComplete="off"
     />

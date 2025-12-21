@@ -1,4 +1,4 @@
-import { TemplateFolder } from "@repo/zod/files";
+import { TemplateFile, TemplateFolder, TemplateItem } from "@repo/zod/files";
 import { useEffect, useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from "../ui/sidebar";
@@ -7,24 +7,29 @@ import FilesOperation from "./file-operation";
 import FileTree from "./file-tree";
 import { RenameFiles } from "./rename-files";
 import { DeleteFilesComp } from "./delete-files";
+import { CreateFilesOrFolder } from "./createFiles";
 
 export const RenderFolder = ({
     folder,
     level,
     path,
     handleRename,
-    handleDelete
+    handleDelete,
+    handleAdd
 }: {
     folder: TemplateFolder;
     level: number;
     path: string;
+    addFilesState?: boolean
     handleRename: (val: string, newPath: string) => void;
     handleDelete: (newPath: string) => void;
+    handleAdd: (data: TemplateItem, path: string) => void
 }) => {
     const [isOpen, setIsOpen] = useState(level < 1);
     const [renameState, setRenameState] = useState<boolean>(false);
     const [localSelected, setLocalSelected] = useState<boolean>(false);
     const [deleteState, setDeleteState] = useState<boolean>(false);
+    const [createFileFolderValue, setCreateFileFolderValue] = useState<null | TemplateFile | TemplateFolder>(null);
 
     const componentRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +58,7 @@ export const RenderFolder = ({
         };
     }, []);
 
+
     return (
         <Collapsible
             open={isOpen}
@@ -60,11 +66,12 @@ export const RenderFolder = ({
             ref={componentRef}
             onClick={!renameState ? handleLocalSelected : undefined}
         >
-            <SidebarMenuItem className="group/item">
-                {renameState ? (
-                    <div className="flex w-full items-center gap-2 pl-2 p-1">
+
+            {renameState ?
+                <SidebarMenuItem className="w-full">
+                    <SidebarMenuButton>
                         <ChevronRight
-                            className={`mr-2 size-5 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                            className={`mr-2 size-4}`}
                         />
                         <Folder className="h-4 w-4 shrink-0 " />
 
@@ -78,8 +85,9 @@ export const RenderFolder = ({
                                 setLocalSelected={setLocalSelected}
                             />
                         </div>
-                    </div>
-                ) : (
+                    </SidebarMenuButton>
+                </SidebarMenuItem> :
+                <SidebarMenuItem className="group/item">
                     <CollapsibleTrigger asChild>
                         <SidebarMenuButton>
                             <ChevronRight
@@ -89,26 +97,38 @@ export const RenderFolder = ({
                             <span>{folder.folderName}</span>
                         </SidebarMenuButton>
                     </CollapsibleTrigger>
-                )}
 
-                {!renameState && (
-                    <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                        <FilesOperation isFolder={true} setRenameState={setRenameState} setDeleteState={setDeleteState} />
-                    </div>
-                )}
 
-                <DeleteFilesComp
-                    deleteState={deleteState}
-                    setDeleteState={setDeleteState}
-                    handleDelete={handleDelete}
-                    isFile={false}
-                    originalName={folder.folderName}
-                    newPath={`${path}/${folder.folderName}`}
-                />
-            </SidebarMenuItem>
+                    {!renameState && (
+                        <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
+                            <FilesOperation
+                                isFolder={true}
+                                setRenameState={setRenameState}
+                                setDeleteState={setDeleteState}
+                                setCreateFileFolderValue={setCreateFileFolderValue}
+                                folder={folder} setCollapseOpen={setIsOpen} />
+                        </div>
+                    )}
+
+                    <DeleteFilesComp
+                        deleteState={deleteState}
+                        setDeleteState={setDeleteState}
+                        handleDelete={handleDelete}
+                        isFile={false}
+                        originalName={folder.folderName}
+                        newPath={`${path}/${folder.folderName}`}
+                    />
+                </SidebarMenuItem>}
+
 
             <CollapsibleContent>
                 <SidebarMenuSub>
+                    {createFileFolderValue && "folderName" in createFileFolderValue &&
+                        <CreateFilesOrFolder
+                            path={`${path}/${folder.folderName}`}
+                            createFileFolderValue={createFileFolderValue}
+                            setCreateFileFolderValue={setCreateFileFolderValue}
+                            handleAdd={handleAdd} />}
                     {folder.items.map((item, index) => (
                         <FileTree
                             key={index}
@@ -117,8 +137,14 @@ export const RenderFolder = ({
                             data={item}
                         />
                     ))}
+                    {createFileFolderValue && "fileName" in createFileFolderValue &&
+                        <CreateFilesOrFolder
+                            path={`${path}/${folder.folderName}`}
+                            createFileFolderValue={createFileFolderValue}
+                            setCreateFileFolderValue={setCreateFileFolderValue}
+                            handleAdd={handleAdd} />}
                 </SidebarMenuSub>
             </CollapsibleContent>
-        </Collapsible>
+        </Collapsible >
     );
 };

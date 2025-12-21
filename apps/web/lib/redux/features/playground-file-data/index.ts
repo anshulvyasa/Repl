@@ -1,6 +1,7 @@
+import { sortTemplateTree } from "@/lib/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteFilesOrFolder, renameFilesOrFolder } from "@repo/utilities/files-operation";
-import { TemplateFolderSchemaType } from "@repo/zod/files";
+import { deleteFilesOrFolder, renameFilesOrFolder, addFileOrFolder } from "@repo/utilities/files-operation";
+import { TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
 
 export type TemplateFilesTypes = TemplateFolderSchemaType | null;
 
@@ -28,9 +29,22 @@ const playgroundTemplateFiles = createSlice({
       const { path } = action.payload;
       if (!state) return state;
       deleteFilesOrFolder(state, path, 0);
+    },
+    addFiles(state, action: PayloadAction<{ data: TemplateItem, path: string[] }>) {
+      const { data, path } = action.payload;
+      if (!state) return state;
+      addFileOrFolder(state, data, path, 0);
+    },
+    sortSubFiles(state, action: PayloadAction<{ data: TemplateItem[] }>) {
+      if (!state) return state;
+      const { data } = action.payload;
+
+      if ("folderName" in state) {
+        sortTemplateTree(state.items);
+      }
     }
   },
 });
 
-export const { addPlaygroundTemplateFiles, renameFiles, deleteFiles } = playgroundTemplateFiles.actions;
+export const { addPlaygroundTemplateFiles, renameFiles, deleteFiles, addFiles, sortSubFiles } = playgroundTemplateFiles.actions;
 export default playgroundTemplateFiles.reducer;

@@ -1,5 +1,5 @@
-import { TemplateFolderSchemaType } from "@repo/zod/files";
-import { addPlaygroundTemplateFiles, deleteFiles, renameFiles, } from "../features/playground-file-data";
+import { TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
+import { addFiles, addPlaygroundTemplateFiles, deleteFiles, renameFiles, sortSubFiles, } from "../features/playground-file-data";
 import { useAppDispatch, useAppSelector } from "../hooks";
 
 export const useTemplatePlayground = () => {
@@ -17,11 +17,19 @@ export const useTemplatePlayground = () => {
   const deleteTemplateFiles = (path: string[]) => {
     dispatch(deleteFiles({ path }));
   }
+  const addTemplateFiles = (data: TemplateItem, path: string[]) => {
+    dispatch(addFiles({ data, path }));
+  }
+  const sortTemplateSubFiles = (data: TemplateItem[]) => {
+    dispatch(sortSubFiles({ data }))
+  }
 
   return {
     updatePlaygroundTemplateFiles,
     templatePlaygroundSelector,
     renameTemplateFilesOrFolder,
-    deleteTemplateFiles
+    deleteTemplateFiles,
+    addTemplateFiles,
+    sortTemplateSubFiles
   };
 };

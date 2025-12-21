@@ -1,4 +1,4 @@
-import { TemplateFile } from "@repo/zod/files";
+import { TemplateFile, TemplateItem } from "@repo/zod/files";
 import React, { useEffect, useRef, useState } from "react";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { File } from "lucide-react";
@@ -12,14 +12,14 @@ export const RenderFile = ({
     file,
     path,
     handleRename,
-    handleDelete
+    handleDelete,
 }: {
     file: TemplateFile,
     path: string,
     handleRename: (newValue: string, newPath: string) => void
     handleDelete: (newPath: string) => void;
 }) => {
-    const originalFilename = `${file.fileName}.${file.fileExtension}`;
+    const originalFilename = file.fileExtension ? `${file.fileName}.${file.fileExtension}` : file.fileName;
     const [renameState, setRenameState] = useState<boolean>(false);
     const [localSelected, setLocalSelected] = useState<boolean>(false);
     const [deleteState, setDeleteState] = useState<boolean>(false);

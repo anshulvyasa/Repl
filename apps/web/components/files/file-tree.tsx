@@ -1,4 +1,4 @@
-import { AddFileFolderAndRenameFileFolderSchemaType, DeleteFileFolderSchemaType } from "@repo/zod/files-operation-queue";
+import { RenameFileFolderSchemaType, DeleteFileFolderSchemaType, AddFileFolderSchemaType } from "@repo/zod/files-operation-queue";
 import { toast } from "sonner";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
 import { useFileOperations } from "@/lib/redux/selectoranddispatcher/useFileOperation";
@@ -12,13 +12,14 @@ interface FileTreeProps {
     path: string;
     level: number;
     data: TemplateItem | null;
+
 }
 
 const FileTree = ({ path, level, data, }: FileTreeProps) => {
 
     const { selectedPlayground } = useSelectedPlaygroundInfo();
     const { addOpsToOpsQueue } = useFileOperations();
-    const { renameTemplateFilesOrFolder, deleteTemplateFiles } = useTemplatePlayground();
+    const { renameTemplateFilesOrFolder, deleteTemplateFiles, addTemplateFiles, sortTemplateSubFiles } = useTemplatePlayground();
 
     if (!data) {
         return <div className="flex items-center ml-4 gap-2 mt-3">
@@ -41,7 +42,7 @@ const FileTree = ({ path, level, data, }: FileTreeProps) => {
             return;
         }
 
-        let ops: AddFileFolderAndRenameFileFolderSchemaType = {
+        let ops: RenameFileFolderSchemaType = {
             playgroundId: selectedPlayground?.id,
             path: newPath,
             newName
@@ -68,6 +69,33 @@ const FileTree = ({ path, level, data, }: FileTreeProps) => {
         deleteTemplateFiles(path);
     }
 
+    const handleAddFileFolder = (item: TemplateItem, path: string) => {
+        if (!selectedPlayground?.id) {
+            toast.error("No Playground Selected");
+            return;
+        }
+
+        if ("fileName" in item) {
+            if (item.fileName.trim() === "") {
+                toast.error("Invalid File Name");
+                return;
+            }
+        }
+
+
+        const addOps: AddFileFolderSchemaType = {
+            playgroundId: selectedPlayground.id,
+            path: path,
+            data: item
+        }
+
+        addOpsToOpsQueue(addOps);
+        const newPath = path.split("/").filter(Boolean);
+        addTemplateFiles(item, newPath);
+        if ("folderName" in data)
+            sortTemplateSubFiles(data.items);
+    }
+
 
     const isFile = "fileName" in data;
     if (isFile) {
@@ -75,7 +103,7 @@ const FileTree = ({ path, level, data, }: FileTreeProps) => {
     }
 
     return (
-        <RenderFolder folder={data} level={level} path={path} handleRename={handleRename} handleDelete={handleDelete} />
+        <RenderFolder folder={data} level={level} path={path} handleRename={handleRename} handleDelete={handleDelete} handleAdd={handleAddFileFolder} />
     )
 }
 
