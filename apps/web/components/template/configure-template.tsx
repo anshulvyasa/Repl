@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -102,8 +103,7 @@ export const ConfigureTemplate = ({
           Configure Your Project
         </DialogTitle>
         <DialogDescription>
-          {getSelectedTemplateData.template?.name || "Your"} project
-          cFonfiguration
+          {getSelectedTemplateData.template?.name || "Your"} project configuration
         </DialogDescription>
       </DialogHeader>
 

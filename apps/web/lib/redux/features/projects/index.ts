@@ -30,9 +30,9 @@ const projectSlice = createSlice({
   reducers: {
     addAllProjects(state, action: PayloadAction<PlayGround[]>) {
       return action.payload;
-    },
+    }
   },
 });
 
-export const { addAllProjects } = projectSlice.actions;
-export default projectSlice.reducer;
+export const { addAllProjects } = projectSlice.actions; // exporting the buttons actions    
+export default projectSlice.reducer;  // exporting the reducer to be used in the store
