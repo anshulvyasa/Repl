@@ -101,14 +101,14 @@ export const EditPlaygroundDataDialog = ({
             type="button"
             variant="outline"
             onClick={() => setDialogState(false)}
-            // disabled={isLoading}
+          // disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             type="button"
             onClick={handleUpdateProject}
-            // disabled={isLoading || !editData.title.trim()}
+          // disabled={isLoading || !editData.title.trim()}
           >
             {/* {isLoading ? "Saving..." : "Save Changes"} */}
             Save Changes

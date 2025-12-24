@@ -1,7 +1,7 @@
 "use client";
 
 import SidebarComponent from "@/components/dashboard/sidebar-comp";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider,SidebarTrigger} from "@/components/ui/sidebar";
 import { PlayGround } from "@/lib/redux/features/projects";
 import { useProject } from "@/lib/redux/selectoranddispatcher/useProjects";
 import { getAllPlayGroundService } from "@/services";
@@ -97,6 +97,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider className="flex min-h-screen w-full overflow-x-hidden">
       <SidebarComponent initialDataPlayground={formattedPlaygroundData} />
+      <SidebarTrigger/>
       <main className="flex-1">{children}</main>
     </SidebarProvider>
   );

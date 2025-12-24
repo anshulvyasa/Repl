@@ -6,6 +6,7 @@ import Image from "next/image";
 import { TemplateSelection } from "../template/template-selection";
 import { useDialogSelectorAndDispatcher } from "@/lib/redux/selectoranddispatcher/useDialogSelectorandDispatcher";
 
+
 export const AddNewButton = () => {
   const { openDialog } = useDialogSelectorAndDispatcher();
 
