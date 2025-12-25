@@ -36,7 +36,6 @@ const Playground = () => {
       }
 
       if (parsedRes.success) {
-        parsedRes.data.folderName = parsedSelectedPlayground.data?.title as string;
         sortTemplateTree(parsedRes.data.items);
         updatePlaygroundTemplateFiles(parsedRes.data);
         store.dispatch(localFileUpdateThunk());

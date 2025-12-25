@@ -11,7 +11,7 @@ import fileOperationQueueReducer from "./features/file-operation-queue/index"
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      selectedTemplate: selectedTemplateReducer,
+      selectedTemplate: selectedTemplateReducer, 
       dialogState: dialogReducer,
       playgrounds: playgroundReducer,
       editDialogState: editPlaygroundDialogStateSlice,

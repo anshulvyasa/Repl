@@ -1,5 +1,5 @@
 import { sortTemplateTree } from "@/lib/utils";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { deleteFilesOrFolder, renameFilesOrFolder, addFileOrFolder } from "@repo/utilities/files-operation";
 import { TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
 

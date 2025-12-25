@@ -10,13 +10,30 @@ interface CreateFilesOrFolderType {
     handleAdd: (data: TemplateItem, path: string) => void
 }
 
-const calcNewFile = (data: TemplateItem, fileName: string) => {
+const calcNewFile = (data: TemplateItem, originalName: string) => {
     let newFile;
+
     if ("fileName" in data) {
-        newFile = { ...data, fileName: fileName }
-    }
-    else {
-        newFile = { ...data, folderName: fileName }
+        const index = originalName.indexOf('.');
+
+        let nameOnly = originalName;
+        let extension = "";
+
+        if (index !== -1) {
+            nameOnly = originalName.slice(0, index);
+            extension = originalName.slice(index + 1);
+        }
+
+        newFile = {
+            ...data,
+            fileName: nameOnly,
+            fileExtension: extension
+        };
+    } else {
+        newFile = {
+            ...data,
+            folderName: originalName
+        };
     }
     return newFile;
 }

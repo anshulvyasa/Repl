@@ -12,6 +12,9 @@ function getItemName(item: TemplateItem): string {
     if (isFolder(item)) {
         return item.folderName;
     }
+    if (item.fileExtension.trim() === "") {
+        return item.fileName;
+    }
     return `${item.fileName}.${item.fileExtension}`;
 }
 
@@ -50,6 +53,8 @@ export function deleteFilesOrFolder(parentFolder: TemplateItem, path: string[], 
         const itemIndex = parentFolder.items.findIndex(
             (item) => getItemName(item) === itemToDeleteName
         );
+
+        // console.log("in utility delete ", path[index + 1], " ", itemIndex, " ******* ", parentFolder)
 
         if (itemIndex !== -1) {
             parentFolder.items.splice(itemIndex, 1);

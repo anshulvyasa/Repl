@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileOperationSchemaType, FileOperationSchemaQueueType, FileOperationSchemaQueue } from '@repo/zod/files-operation-queue'
 import { AppThunk } from '../../store';
-import { deleteFiles, renameFiles } from '../playground-file-data';
-import { log } from 'console';
+import { addFiles, deleteFiles, renameFiles } from '../playground-file-data';
+
 
 const defaultState: FileOperationSchemaQueueType = {
     items: [],
@@ -14,12 +14,9 @@ const calcInitialState = () => {
         const serializeObject = localStorage.getItem('fileops');
 
         if (serializeObject === null) return defaultState;
-        console.log("Serial Objecyt is ", serializeObject)
 
         const parsedSerializeObject = FileOperationSchemaQueue.safeParse(JSON.parse(serializeObject))
         if (parsedSerializeObject.error) return defaultState;
-
-        console.log(parsedSerializeObject.data)
 
         return parsedSerializeObject.data;
     }
@@ -62,7 +59,6 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
 
     for (const item of fileOpsQueue.items) {
         // handling renaming of current playground
-        console.log("items os file Ops is : ", item)
         if (currentSelectedPlayground.id === item.playgroundId && "newName" in item) {
             const path = item.path.split('/').filter(Boolean);
             const newName = item.newName;
@@ -78,6 +74,12 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
             dispatch(deleteFiles({ path }));
         }
 
+        //handling add files
+        if (currentSelectedPlayground.id === item.playgroundId && "data" in item) {
+            const path = item.path.split("/").filter(Boolean);
+            dispatch(addFiles({ data: item.data, path }))
+        }
+
     }
 }
 
@@ -85,6 +87,7 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
 
 // Todo : backend logic
 export const fileQueueThunk = (): AppThunk => (dispatch, getState) => {
+    
 }
 
 export default fileOperationQueueSlice.reducer;

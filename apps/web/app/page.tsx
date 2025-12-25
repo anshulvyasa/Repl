@@ -6,7 +6,9 @@ import Link from "next/link";
 const HomePage = () => {
 
   return (
-    <div className="flex flex-col items-center justify-center mt-12 pb-7">
+    <div className="flex flex-col items-center justify-center mt-12 pb-7 px-5 relative overflow-hidden">
+
+
       <div
         className="
           absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] 
@@ -18,10 +20,13 @@ const HomePage = () => {
           Vibe Code With with Intelligence
         </h1>
       </div>
+
       <p className="text-lg text-center text-gray-600 dark:text-gray-400 px-5 py-10 max-w-2xl">
         VibeCode Editor isn't just a tool; it's your intelligent coding partner. By merging advanced diagnostics with a seamless interface,
         we empower you to write cleaner code, squash bugs instantly, and optimize performance without breaking your flow.
       </p>
+
+
       <Link href={"/auth"}>
         <Button
           size={"lg"}
@@ -31,6 +36,9 @@ const HomePage = () => {
           <ArrowUpRight className="ml-2 w-4 h-4" />
         </Button>
       </Link>
+
+
+
     </div>
   );
 };
