@@ -14,12 +14,9 @@ const calcInitialState = () => {
         const serializeObject = localStorage.getItem('fileops');
 
         if (serializeObject === null) return defaultState;
-        console.log("Serial Objecyt is ", serializeObject)
 
         const parsedSerializeObject = FileOperationSchemaQueue.safeParse(JSON.parse(serializeObject))
         if (parsedSerializeObject.error) return defaultState;
-
-        console.log(parsedSerializeObject.data)
 
         return parsedSerializeObject.data;
     }
@@ -90,6 +87,7 @@ export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
 
 // Todo : backend logic
 export const fileQueueThunk = (): AppThunk => (dispatch, getState) => {
+    
 }
 
 export default fileOperationQueueSlice.reducer;
