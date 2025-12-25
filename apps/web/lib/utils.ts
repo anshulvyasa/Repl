@@ -36,7 +36,7 @@ function templateFileComparator(a: TemplateItem, b: TemplateItem): number {
 }
 
 export function sortTemplateTree(items: TemplateItem[]) {
-  items.sort(templateFileComparator);
+  items.sort(templateFileComparator );
 
   for (const item of items) {
     if (isFolder(item)) {
