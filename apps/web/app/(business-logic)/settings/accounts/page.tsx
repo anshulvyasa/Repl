@@ -15,11 +15,6 @@ export default  async function AccountSettings() {
 
   const user = await getUserInfo();
 
-  // const handleDeleteAccount = () => {
-  //   // Add your delete account logic here
-  //   alert("Account deleted");
-  // };
-
   return (
     <div className="max-w-3xl mx-auto space-y-6 px-4 py-6 md:px-0">
       

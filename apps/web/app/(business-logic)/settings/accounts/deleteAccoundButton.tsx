@@ -47,16 +47,6 @@ export function DeleteAccountButton() {
   };
 
 
-  // const handleDialogChange = (open: boolean) => {
-  //   setDeleteDialogOpen(open);
-  //   if (!open) {
-  //     setConfirmationtext("");
-  //   }
-  // };
-
-
-  // <AlertDialog open={deleteDialogOpen} onOpenChange={handleDialogChange}></AlertDialog>
-
   return (
     <>
       <button
