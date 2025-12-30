@@ -14,6 +14,7 @@ import {
 
 
 import { finalDelete } from "./delete";
+import { signOut } from "next-auth/react";
 
 
 export function DeleteAccountButton() {
@@ -24,6 +25,7 @@ export function DeleteAccountButton() {
 
   const handleDeleteAccount = async () => {
     try {
+
       setIsDeleting(true);
       await finalDelete();
 
@@ -31,11 +33,11 @@ export function DeleteAccountButton() {
       localStorage.clear();
       sessionStorage.clear();
 
+      await signOut({
+        callbackUrl:"/",
+        redirect:true
+      })
 
-
-
-
-      setIsDeleting(false);
     } catch (error) {
       console.error("Failed to delete account:", error);
       alert("Failed to delete account. Please try again.");
