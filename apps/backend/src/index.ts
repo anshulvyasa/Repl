@@ -7,6 +7,7 @@ import { v1Routes } from "./app/v1";
 const app = express();
 const PORT = process.env.PORT || 5000;
 dotenv.config();
+
 app.use(
   cors({
     origin: process.env.ORIGIN,
