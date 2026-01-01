@@ -95,5 +95,5 @@ export function applyOperation(
 
   parent.items.splice(idx, 1);
 
-   console.log("ROOT AFTER:", JSON.stringify(root, null, 2));
+ 
 }
