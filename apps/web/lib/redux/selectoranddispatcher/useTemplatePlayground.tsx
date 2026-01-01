@@ -11,18 +11,36 @@ export const useTemplatePlayground = () => {
   const updatePlaygroundTemplateFiles = (files: TemplateFolderSchemaType | null) => {
     dispatch(addPlaygroundTemplateFiles(files));
   };
-  const renameTemplateFilesOrFolder = (path: string[], newName: string) => {
-    dispatch(renameFiles({ path, newName }));
-  }
-  const deleteTemplateFiles = (path: string[]) => {
-    dispatch(deleteFiles({ path }));
-  }
-  const addTemplateFiles = (data: TemplateItem, path: string[]) => {
-    dispatch(addFiles({ data, path }));
-  }
-  const sortTemplateSubFiles = (data: TemplateItem[]) => {
-    dispatch(sortSubFiles({ data }))
-  }
+const renameTemplateFilesOrFolder = (path: string[], newName: string) => {
+  dispatch(
+    renameFiles({
+      path, 
+      newName,
+    })
+  );
+};
+
+const deleteTemplateFiles = (path: string[]) => {
+  dispatch(
+    deleteFiles({
+      path, 
+    })
+  );
+};
+
+const addTemplateFiles = (data: TemplateItem, path: string[]) => {
+  dispatch(
+    addFiles({
+      data,
+      path,
+    })
+  );
+};
+
+
+
+
+
 
   return {
     updatePlaygroundTemplateFiles,
@@ -30,6 +48,6 @@ export const useTemplatePlayground = () => {
     renameTemplateFilesOrFolder,
     deleteTemplateFiles,
     addTemplateFiles,
-    sortTemplateSubFiles
+    
   };
 };

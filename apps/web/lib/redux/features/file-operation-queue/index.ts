@@ -1,94 +1,89 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileOperationSchemaType, FileOperationSchemaQueueType, FileOperationSchemaQueue } from '@repo/zod/files-operation-queue'
-import { AppThunk } from '../../store';
-import { addFiles, deleteFiles, renameFiles } from '../playground-file-data';
-
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  FileOperationSchemaType,
+  FileOperationSchemaQueueType,
+  FileOperationSchemaQueue,
+} from "@repo/zod/files-operation-queue";
+import { AppThunk } from "../../store";
+import axiosInstance from "@/axiosinstance";
+import { addPlaygroundTemplateFiles } from "../playground-file-data";
 
 const defaultState: FileOperationSchemaQueueType = {
-    items: [],
-    head: -1
+  items: [],
+  head: 0,
 };
 
-const calcInitialState = () => {
-    try {
-        const serializeObject = localStorage.getItem('fileops');
+const calcInitialState = (): FileOperationSchemaQueueType => {
+  try {
+    const stored = localStorage.getItem("fileops");
+    if (!stored) return defaultState;
 
-        if (serializeObject === null) return defaultState;
+    const parsed = FileOperationSchemaQueue.safeParse(JSON.parse(stored));
+    if (!parsed.success) return defaultState;
 
-        const parsedSerializeObject = FileOperationSchemaQueue.safeParse(JSON.parse(serializeObject))
-        if (parsedSerializeObject.error) return defaultState;
+    return parsed.data;
+  } catch {
+    return defaultState;
+  }
+};
 
-        return parsedSerializeObject.data;
+const initialState = calcInitialState();
+
+//slice
+
+const slice = createSlice({
+  name: "fileOperationQueue",
+  initialState,
+  reducers: {
+    addOperationToOpsQueue(state, action) {
+      state.items.push(action.payload);
+      localStorage.setItem("fileops", JSON.stringify(state));
+    },
+
+    clearOperationQueue(state) {
+      state.items = [];
+      state.head = 0;
+      localStorage.removeItem("fileops");
+    },
+
+    setQueueHead(state, action) {
+      state.head = action.payload;
+      localStorage.setItem("fileops", JSON.stringify(state));
+    },
+  },
+});
+
+export default slice.reducer;
+export const { addOperationToOpsQueue, clearOperationQueue, setQueueHead } =
+  slice.actions;
+
+//sync file operations from client to server
+export const fileQueueThunk = (): AppThunk => async (dispatch, getState) => {
+  const { fileOperations, selectedPlaygroundInfo } = getState();
+
+  if (!selectedPlaygroundInfo?.id) return;
+  if (
+    fileOperations.items.length === 0 ||
+    fileOperations.head >= fileOperations.items.length
+  ) {
+    return;
+  }
+
+  const res = await axiosInstance.post(
+    `/app/v1/files/sync/${selectedPlaygroundInfo.id}`,
+    {
+      items: fileOperations.items,
+      head: fileOperations.head,
     }
-    catch (error) {
-        return defaultState;
-    }
-}
+  );
 
-const initialState: FileOperationSchemaQueueType = calcInitialState();
+  if (!res.data?.success) return;
 
+  dispatch(clearOperationQueue());
 
-const fileOperationQueueSlice = createSlice({
-    name: "fileOperationQueue",
-    initialState,
-    reducers: {
-        addOperationToOpsQueue(state, action: PayloadAction<FileOperationSchemaType>) {
-            state.items.push(action.payload);
-            state.head++;
-        },
-        removeOperationFromOpsQueue(state) {
-            if (state.head > -1) {
-                state.items.pop();
-                state.head--;
-            }
-        },
-        clearOperationQueue(state) {
-            state.items = [];
-            state.head = 0;
-        }
-    }
-})
+  const refreshed = await axiosInstance.get(
+    `/app/v1/files/get/${selectedPlaygroundInfo.id}`
+  );
 
-export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
-    const fileOpsQueue = getState().fileOperations;
-
-    if (fileOpsQueue.head == -1) return;
-
-    const currentSelectedPlayground = getState().selectedPlaygroundInfo;
-    if (!currentSelectedPlayground?.id) return;
-
-    for (const item of fileOpsQueue.items) {
-        // handling renaming of current playground
-        if (currentSelectedPlayground.id === item.playgroundId && "newName" in item) {
-            const path = item.path.split('/').filter(Boolean);
-            const newName = item.newName;
-
-            if (path[path.length - 1]?.trim() === newName.trim()) continue;
-
-            dispatch(renameFiles({ path, newName }))
-        }
-
-        // handling delete Files
-        if (currentSelectedPlayground.id === item.playgroundId && !("newName" in item) && !("data" in item)) {
-            const path = item.path.split("/").filter(Boolean);
-            dispatch(deleteFiles({ path }));
-        }
-
-        //handling add files
-        if (currentSelectedPlayground.id === item.playgroundId && "data" in item) {
-            const path = item.path.split("/").filter(Boolean);
-            dispatch(addFiles({ data: item.data, path }))
-        }
-
-    }
-}
-
-
-
-// Todo : backend logic
-export const fileQueueThunk = (): AppThunk => (dispatch, getState) => {
-    
-}
-
-export default fileOperationQueueSlice.reducer;
-export const { addOperationToOpsQueue, removeOperationFromOpsQueue, clearOperationQueue } = fileOperationQueueSlice.actions;
+  dispatch(addPlaygroundTemplateFiles(refreshed.data.files.content));
+};

@@ -7,53 +7,40 @@ import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemp
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
 import { sortTemplateTree } from "@/lib/utils";
 import { getPlaygroundTemplateFiles } from "@/services";
-import { TemplateFolderSchema } from "@repo/zod/files";
-import { selectedPlaygroundSchema } from "@repo/zod/playground";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/lib/redux/hooks";
-import { localFileUpdateThunk } from "@/lib/redux/features/file-operation-queue";
 
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
+
   const { updatePlaygroundTemplateFiles } = useTemplatePlayground();
-  const { updateSelectedPlaygroundFn, selectedPlayground } = useSelectedPlaygroundInfo();
+  const { updateSelectedPlaygroundFn, selectedPlayground } =
+    useSelectedPlaygroundInfo();
 
-  const [sidebarWidth, setSidebarWidth] = useState<number>(260);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
-  const store = useAppStore();
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await getPlaygroundTemplateFiles(id);
-      const parsedRes = TemplateFolderSchema.safeParse(res.files.content);
-      const parsedSelectedPlayground = selectedPlaygroundSchema.safeParse(res.playground)
+ useEffect(() => {
+  async function fetchData() {
+    const res = await getPlaygroundTemplateFiles(id);
 
-      if (parsedSelectedPlayground.success) {
-        updateSelectedPlaygroundFn(parsedSelectedPlayground.data)
-      }
+    updateSelectedPlaygroundFn(res.playground);
+    sortTemplateTree(res.files.content.items);
+    updatePlaygroundTemplateFiles(res.files.content);
+  }
 
-      if (parsedRes.success) {
-        sortTemplateTree(parsedRes.data.items);
-        updatePlaygroundTemplateFiles(parsedRes.data);
-        store.dispatch(localFileUpdateThunk());
-      }
-      else toast.error("Some Error Occured at the client side");
-    }
+  fetchData();
 
-    fetchData();
+  return () => {
+    updatePlaygroundTemplateFiles(null);
+  };
+}, [id]);
 
-    return () => {
-      updatePlaygroundTemplateFiles(null);
-    }
-  }, [id]);
 
   return (
     <TooltipProvider>
       <div className="flex h-screen w-full overflow-hidden bg-background">
-
         <TemplateFileTree
           sidebarWidth={sidebarWidth}
           setSidebarWidth={setSidebarWidth}
@@ -61,23 +48,14 @@ const Playground = () => {
           setIsResizing={setIsResizing}
         />
 
-        <div
-          className={cn(
-            "flex flex-1 flex-col min-w-0 overflow-hidden",
-            !isResizing && "transition-[margin] duration-300 ease-in-out",
-            isResizing && "!transition-none !duration-0"
-          )}
-        >
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <div className={cn("flex flex-1 flex-col min-w-0 overflow-hidden")}>
+          <header className="flex h-16 items-center gap-2 border-b px-4">
             <SidebarTrigger
-              className="-ml-1"
-              onClick={() => {
-                setSidebarWidth(sidebarWidth === 0 ? 260 : 0);
-              }}
+              onClick={() => setSidebarWidth(sidebarWidth === 0 ? 260 : 0)}
             />
-            <div className="flex flex-1 items-center gap-2">
-              <h1 className="text-sm font-medium">{selectedPlayground?.title || "Code Playground"}</h1>
-            </div>
+            <h1 className="text-sm font-medium">
+              {selectedPlayground?.title || "Code Playground"}
+            </h1>
           </header>
         </div>
       </div>
