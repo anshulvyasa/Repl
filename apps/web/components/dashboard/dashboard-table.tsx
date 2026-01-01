@@ -76,7 +76,7 @@ export const DashBoardTable = () => {
                   <div className="w-8 h-8 rounded-full overflow-hidden">
                     <Image
                       src={playground.user.image || "/placeholder.svg"}
-                      alt={playground.user.name}
+                      alt={playground.user.name || "U"}
                       width={32}
                       height={32}
                       className="object-cover"
