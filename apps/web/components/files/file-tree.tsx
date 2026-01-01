@@ -19,7 +19,7 @@ const FileTree = ({ path, level, data, }: FileTreeProps) => {
 
     const { selectedPlayground } = useSelectedPlaygroundInfo();
     const { addOpsToOpsQueue } = useFileOperations();
-    const { renameTemplateFilesOrFolder, deleteTemplateFiles, addTemplateFiles, sortTemplateSubFiles } = useTemplatePlayground();
+    const { renameTemplateFilesOrFolder, deleteTemplateFiles, addTemplateFiles,  } = useTemplatePlayground();
 
     if (!data) {
         return <div className="flex items-center ml-4 gap-2 mt-3">
@@ -92,8 +92,7 @@ const FileTree = ({ path, level, data, }: FileTreeProps) => {
         addOpsToOpsQueue(addOps);
         const newPath = path.split("/").filter(Boolean);
         addTemplateFiles(item, newPath);
-        if ("folderName" in data)
-            sortTemplateSubFiles(data.items);
+        
     }
 
 

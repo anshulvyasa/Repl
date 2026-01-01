@@ -1,8 +1,13 @@
 import type { TemplateItem } from '@repo/zod/files'
-
-function isFolder(item: TemplateItem): item is Extract<TemplateItem, { folderName: string }> {
-    return "folderName" in item;
+function stripRoot(path: string[]): string[] {
+  return path.slice(1);
 }
+
+function isFolder(item: TemplateItem): item is Extract<TemplateItem, { items: TemplateItem[] }> {
+  return "items" in item;
+}
+
+
 
 function isFile(item: TemplateItem): item is Extract<TemplateItem, { fileName: string }> {
     return "fileName" in item;
@@ -12,64 +17,87 @@ function getItemName(item: TemplateItem): string {
     if (isFolder(item)) {
         return item.folderName;
     }
-    if (item.fileExtension.trim() === "") {
-        return item.fileName;
-    }
-    return `${item.fileName}.${item.fileExtension}`;
+    return item.fileName
 }
-
 export function renameFilesOrFolder(
-    playground: TemplateItem,
-    path: string[],
-    index: number,
-    newName: string
+  root: TemplateItem,
+  path: string[],
+  _index: number,
+  newName: string
 ) {
-    if (index === path.length - 1) {
-        if (isFolder(playground)) {
-            playground.folderName = newName;
-        } else if (isFile(playground)) {
-            const parts = newName.split(".");
-            playground.fileName = parts[0] as string;
-            playground.fileExtension = parts.slice(1).join(".");
-        }
-        return;
-    }
+  if (!isFolder(root)) return;
 
-    if (!isFolder(playground)) return;
+  const parentPath = path.slice(0, -1);
+  const targetName = path.at(-1);
+  if (!targetName) return;
 
-    const nextName = path[index + 1];
-    const nextItem = playground.items.find(item => getItemName(item) === nextName);
+  let parent: TemplateItem = root;
 
-    if (nextItem) {
-        renameFilesOrFolder(nextItem, path, index + 1, newName);
-    }
+  for (const segment of parentPath) {
+    if (!isFolder(parent)) return;
+
+    const next = parent.items.find(
+  (item) => isFolder(item) && item.folderName === segment
+) as TemplateItem | undefined;
+
+    if (!next) return;
+    parent = next;
+  }
+
+  if (!isFolder(parent)) return;
+
+  const target = parent.items.find(
+    (item) =>
+      (isFolder(item) && item.folderName === targetName) ||
+      (!isFolder(item) && item.fileName === targetName)
+  );
+
+  if (!target) return;
+
+  if (isFolder(target)) {
+    target.folderName = newName;
+  } else {
+    const [name, ...ext] = newName.split(".");
+    if (!name) return;
+    target.fileName = name;
+    target.fileExtension = ext.join(".");
+  }
 }
+export function deleteFilesOrFolder(
+  root: TemplateItem,
+  path: string[],
+  _index: number
+) {
+  if (!isFolder(root)) return;
 
-export function deleteFilesOrFolder(parentFolder: TemplateItem, path: string[], index: number) {
-    if (!isFolder(parentFolder)) return;
+  const parentPath = path.slice(0, -1);
+  const targetName = path.at(-1);
+  if (!targetName) return;
 
-    if (index === path.length - 2) {
-        const itemToDeleteName = path[index + 1];
-        const itemIndex = parentFolder.items.findIndex(
-            (item) => getItemName(item) === itemToDeleteName
-        );
+  let parent: TemplateItem = root;
 
-        // console.log("in utility delete ", path[index + 1], " ", itemIndex, " ******* ", parentFolder)
+  for (const segment of parentPath) {
+    if (!isFolder(parent)) return;
 
-        if (itemIndex !== -1) {
-            parentFolder.items.splice(itemIndex, 1);
-        }
-        return;
-    }
+   const next = parent.items.find(
+  (item) => isFolder(item) && item.folderName === segment
+) as TemplateItem | undefined;
 
-    const nextFolderName = path[index + 1];
-    const nextFolder = parentFolder.items.find(
-        (item) => isFolder(item) && item.folderName === nextFolderName
-    );
+    if (!next) return;
+    parent = next;
+  }
 
-    if (nextFolder) {
-        deleteFilesOrFolder(nextFolder, path, index + 1);
-    }
+  if (!isFolder(parent)) return;
+
+  const idx = parent.items.findIndex(
+    (item) =>
+      (isFolder(item) && item.folderName === targetName) ||
+      (!isFolder(item) && item.fileName === targetName)
+  );
+
+  if (idx !== -1) {
+    parent.items.splice(idx, 1);
+  }
 }
 
 export function addFileOrFolder(

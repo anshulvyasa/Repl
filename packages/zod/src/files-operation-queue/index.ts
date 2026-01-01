@@ -1,5 +1,10 @@
 import z from "zod";
-import { TemplateItem, TemplateItemSchema } from "../files";
+import { TemplateItemSchema } from "@repo/zod/files";
+
+function stripRoot(path: string[]): string[] {
+  return path.slice(1); 
+}
+
 
 export const RenameFileFolderSchema = z.object({
     playgroundId: z.string().nonempty(),
