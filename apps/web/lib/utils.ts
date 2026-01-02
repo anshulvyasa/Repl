@@ -15,33 +15,41 @@ function isFile(item: TemplateItem): item is TemplateFile {
   return "fileName" in item;
 }
 
-function templateFileComparator(a: TemplateItem, b: TemplateItem): number {
+export function templateFileComparator(a: TemplateItem, b: TemplateItem): number {
   const aIsFolder = isFolder(a);
   const bIsFolder = isFolder(b);
 
+ 
   if (aIsFolder && !bIsFolder) return -1;
   if (!aIsFolder && bIsFolder) return 1;
 
+ 
   if (aIsFolder && bIsFolder) {
-    return a.folderName.localeCompare(b.folderName);
+    return a.folderName.localeCompare(b.folderName, undefined, {
+      sensitivity: "base",
+    });
   }
 
+  
   if (isFile(a) && isFile(b)) {
     const aName = `${a.fileName}.${a.fileExtension}`;
     const bName = `${b.fileName}.${b.fileExtension}`;
-    return aName.localeCompare(bName);
+
+    return aName.localeCompare(bName, undefined, {
+      sensitivity: "base",
+    });
   }
 
   return 0;
 }
 
-export function sortTemplateTree(items: TemplateItem[]) {
-  items.sort(templateFileComparator);
 
-  for (const item of items) {
-    if (isFolder(item)) {
-      sortTemplateTree(item.items);
-    }
-  }
+export function sortTemplateTree(items: TemplateItem[]): TemplateItem[] {
+  return [...items]
+    .sort(templateFileComparator)
+    .map((item) =>
+      isFolder(item)
+        ? { ...item, items: sortTemplateTree(item.items) }
+        : item
+    );
 }
-

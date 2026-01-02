@@ -18,23 +18,44 @@ const playgroundTemplateFiles = createSlice({
       state,
       action: PayloadAction<TemplateFilesTypes>
     ) {
+      if(!action.payload) return state;
+      sortTemplateTree(action.payload.items);
       return action.payload;
     },
-    renameFiles(state, action: PayloadAction<{ path: string[], newName: string }>) {
-      const { path, newName } = action.payload;
-      if (!state) return state;
-      renameFilesOrFolder(state, path, 0, newName);
-    },
-    deleteFiles(state, action: PayloadAction<{ path: string[] }>) {
-      const { path } = action.payload;
-      if (!state) return state;
-      deleteFilesOrFolder(state, path, 0);
-    },
-    addFiles(state, action: PayloadAction<{ data: TemplateItem, path: string[] }>) {
-      const { data, path } = action.payload;
-      if (!state) return state;
-      addFileOrFolder(state, data, path, 0);
-    },
+  renameFiles(state, action) {
+  console.log("REDUX RENAME PATH =>", action.payload.path);
+  const { path, newName } = action.payload;
+
+  if (!state) return state;
+
+  const relativePath = path.slice(1); 
+  renameFilesOrFolder(state, relativePath, 0, newName);
+  sortTemplateTree(state.items);  
+},
+
+    deleteFiles(state, action) {
+  console.log("REDUX DELETE PATH =>", action.payload.path);
+  const { path } = action.payload;
+
+  if (!state) return state;
+
+  const relativePath = path.slice(1); 
+  deleteFilesOrFolder(state, relativePath, 0);
+  sortTemplateTree(state.items);  
+},
+
+  addFiles(state, action) {
+  const { data, path } = action.payload;
+  if (!state) return state;
+
+
+  const relativePath = path.slice(1, -1);
+
+  addFileOrFolder(state, data, relativePath, 0);
+  sortTemplateTree(state.items);  
+},
+
+
     sortSubFiles(state, action: PayloadAction<{ data: TemplateItem[] }>) {
       if (!state) return state;
       const { data } = action.payload;
