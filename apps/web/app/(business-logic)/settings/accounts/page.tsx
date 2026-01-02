@@ -6,18 +6,45 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {  DeleteAccountButton} from "./deleteAccoundButton";
+import { DeleteAccountButton } from "./deleteAccoundButton";
 import { Button } from "@/components/ui/button";
+import { UploadButton } from "./uploadButton";
+import getUserInfo from "@/lib/get_user";
+import { prisma } from "@repo/db";
 
-import { getUserInfo } from "@/lib/get_user";
-
-export default  async function AccountSettings() {
-
+export default async function AccountSettings() {
   const user = await getUserInfo();
+
+  // 1. Safety Check: If no user is found, stop execution (or redirect)
+  if (!user || !user.id) {
+     return null; // or return null
+  }
+
+  // 2. Correct Prisma Logic
+  // We find the unique user by ID, then SELECT only the image field
+  const dbData = await prisma.user.findUnique({
+    where: {
+      id: user.id,
+    },
+    select: {
+      image: true,
+    },
+  });
+
+  const profileImage = dbData?.image;
+
+  // 3. Initials Logic (Added defaults to prevent errors)
+  const initials = user.name
+    ? user.name
+        .split(" ")
+        .map((word) => word[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "U";
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 px-4 py-6 md:px-0">
-      
       {/* Header */}
       <div className="space-y-1 text-center md:text-left">
         <h1 className="text-3xl font-semibold tracking-tight">Account</h1>
@@ -38,14 +65,15 @@ export default  async function AccountSettings() {
         <CardContent>
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <Avatar className="h-24 w-24">
-              {/* Todo: Here we  need to replace it with the cloudinary optimised link */}
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={profileImage || ""} />
+              {/* Fix: Added curly braces to render the variable, not the text "initials" */}
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div className="space-y-2 text-center sm:text-left">
               <div className="flex gap-2 justify-center sm:justify-start">
-                <Button size="sm">Upload</Button>
+                {/* Pass userId if your UploadButton needs it */}
+                <UploadButton/>
                 <Button size="sm" variant="outline">
                   Remove
                 </Button>
@@ -68,7 +96,7 @@ export default  async function AccountSettings() {
             </div>
 
             <Card className="w-full md:w-64 p-3 flex items-center bg-muted/50">
-              <span className="text-sm font-medium">{user?.name}</span>
+              <span className="text-sm font-medium">{user.name}</span>
             </Card>
           </div>
         </CardContent>
@@ -84,14 +112,14 @@ export default  async function AccountSettings() {
             </div>
 
             <Card className="w-full md:w-64 p-3 flex items-center text-muted-foreground bg-muted/50">
-              <span className="text-sm">{user?.email}</span>
+              <span className="text-sm">{user.email}</span>
             </Card>
           </div>
         </CardContent>
 
         {/* Delete Account Section */}
         <CardContent className="border-t pt-6">
-          <DeleteAccountButton/>
+          <DeleteAccountButton />
         </CardContent>
       </Card>
     </div>

@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@repo/db";
 
 
-export const getUserInfo=async()=>{
+export default async function getUserInfo(){
     const session=await auth();
 
     if(!session?.user?.id){
@@ -18,4 +18,5 @@ export const getUserInfo=async()=>{
     });
 
     return user;
+    // this contain the whole info about the user (head to toe)
 }

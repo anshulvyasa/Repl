@@ -1,6 +1,6 @@
 "use server"
 
-import { getUserInfo } from "@/lib/get_user";
+import  getUserInfo  from "@/lib/get_user";
 import { prisma } from "@repo/db";
 
 
