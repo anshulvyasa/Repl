@@ -6,9 +6,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DeleteAccountButton } from "./deleteAccoundButton";
-import { Button } from "@/components/ui/button";
-import { UploadButton } from "./profileClient";
+import { DeleteAccountButton } from "../../../../components/settings/deleteAccount/deleteAccoundButton";
+import { UploadButton } from "../../../../components/settings/uploadProfilePic/profileClient";
 import getUserInfo from "@/lib/get_user";
 import { prisma } from "@repo/db";
 import RemovePicButton from "../../../../components/settings/removeProfilePic/removeButton"
