@@ -34,8 +34,8 @@ export function DeleteAccountButton() {
       sessionStorage.clear();
 
       await signOut({
-        callbackUrl:"/",
-        redirect:true
+        callbackUrl: "/",
+        redirect: true
       })
 
     } catch (error) {
@@ -45,6 +45,11 @@ export function DeleteAccountButton() {
       setIsDeleting(false);
     }
   };
+
+
+  const handleCancle = () => {
+    setConfirmationtext("");
+  }
 
 
   return (
@@ -81,7 +86,8 @@ export function DeleteAccountButton() {
           </div>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+             onClick={handleCancle}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={confirmationText !== "CONFIRM" || isDeleting}
