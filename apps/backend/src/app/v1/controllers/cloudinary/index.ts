@@ -1,38 +1,46 @@
-import cloudinary from "../../lib/cloudinary/cloudinary";
-import { Request, Response } from "express";
-import { prisma } from "@repo/db/jsclient";
+import { uploadToCloudinary } from "../../lib/cloudinary/cloudinary"
+import { Request, Response } from "express"
+import { prisma } from "@repo/db/jsclient"
+import fs from "fs/promises"
 
-
-type Body = {
-    photo: string
-}
-
-// the user posts an image form their device
 export async function POSTimage(req: Request, res: Response) {
     try {
-        const body = req.body as Body  //coming from frontend
+        const file = req.file
+        const userId = req.body.userId
 
-        if (!body.photo || !req.user?.id) {
-            return res.status(400).json({ success: false, error: "Photo required" });
+        if (!file || !userId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing file or userId",
+            })
         }
 
-        const base64Image = body.photo.split(',')[1];//To get the base64 part only
-        const photoUrl = await cloudinary.uploader.upload(
-            `data:image/jpeg;base64,${base64Image}`,
-            { folder: "profile" }
-        ) //GETTING THE CLOUDINARY OPTIMISED URL
+        const response = await uploadToCloudinary(file.path)
 
-        const newPic = await prisma.user.update({
-            where: { id: req.user?.id },
-            data: {
-                image: photoUrl.secure_url
-            }
+        if (!response?.secure_url) {
+            return res.status(502).json({
+                success: false,
+                message: "Error uploading image to Cloudinary",
+            })
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { image: response.secure_url },
         })
-        // console.log("These are the post errors", newPic);
-        return res.status(201).json({ success: true, data: photoUrl });
 
+        // File cleanup is handled by uploadToCloudinary
+
+        return res.status(201).json({
+            success: true,
+            imageUrl: response.secure_url,
+        })
     } catch (error) {
-        console.error('Error creating post:', error); // Log the error
-        res.status(500).json({ success: false, error: "Error while getting image URL from cloudinary  or posting the image to the backend" });
+        console.error("error while uploading the image", error)
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        })
     }
 }

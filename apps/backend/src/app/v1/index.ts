@@ -9,4 +9,4 @@ export const v1Routes: Router = Router();
 v1Routes.use("/playground", playGroundRoutes);
 v1Routes.use("/template", templateRoute);
 v1Routes.use("/files", fileSystemRoutes);
-v1Routes.use('/cloudinary',cloudinaryRoutes)
+v1Routes.use("/cloudinary",cloudinaryRoutes)

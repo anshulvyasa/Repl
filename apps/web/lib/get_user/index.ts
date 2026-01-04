@@ -11,7 +11,7 @@ export default async function getUserInfo(){
         return null;
     }
 
-    const user=await prisma.user.findUnique({
+    const user=await prisma.user.findFirst({
         where:{
             id:session.user.id
         }
@@ -20,3 +20,4 @@ export default async function getUserInfo(){
     return user;
     // this contain the whole info about the user (head to toe)
 }
+

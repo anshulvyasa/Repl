@@ -8,16 +8,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DeleteAccountButton } from "./deleteAccoundButton";
 import { Button } from "@/components/ui/button";
-import { UploadButton } from "./uploadButton";
+import { UploadButton } from "./profileClient";
 import getUserInfo from "@/lib/get_user";
 import { prisma } from "@repo/db";
+import RemovePicButton from "../../../../components/settings/removeProfilePic/removeButton"
 
 export default async function AccountSettings() {
   const user = await getUserInfo();
 
   // 1. Safety Check: If no user is found, stop execution (or redirect)
   if (!user || !user.id) {
-     return null; // or return null
+    return null; // or return null
   }
 
   // 2. Correct Prisma Logic
@@ -36,11 +37,11 @@ export default async function AccountSettings() {
   // 3. Initials Logic (Added defaults to prevent errors)
   const initials = user.name
     ? user.name
-        .split(" ")
-        .map((word) => word[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .map((word) => word[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase()
     : "U";
 
   return (
@@ -65,7 +66,7 @@ export default async function AccountSettings() {
         <CardContent>
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={profileImage || ""} />
+              <AvatarImage src={profileImage || undefined} />
               {/* Fix: Added curly braces to render the variable, not the text "initials" */}
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -73,10 +74,8 @@ export default async function AccountSettings() {
             <div className="space-y-2 text-center sm:text-left">
               <div className="flex gap-2 justify-center sm:justify-start">
                 {/* Pass userId if your UploadButton needs it */}
-                <UploadButton/>
-                <Button size="sm" variant="outline">
-                  Remove
-                </Button>
+                <UploadButton />
+                <RemovePicButton />
               </div>
               <p className="text-xs text-muted-foreground">
                 JPG, PNG or GIF. Max size 2MB.
