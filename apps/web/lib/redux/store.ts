@@ -6,18 +6,20 @@ import editPlaygroundDialogStateSlice from "./features/editdialog/index";
 import playgroundTemplateFilesReducer from "./features/playground-file-data/index";
 import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
 import fileOperationQueueReducer from "./features/file-operation-queue/index"
+import globalFileSelectionReducer from './features/file-selected/index'
 
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      selectedTemplate: selectedTemplateReducer, 
+      selectedTemplate: selectedTemplateReducer,
       dialogState: dialogReducer,
       playgrounds: playgroundReducer,
       editDialogState: editPlaygroundDialogStateSlice,
       playgroundTemplateFiles: playgroundTemplateFilesReducer,
       selectedPlaygroundInfo: selectedPlaygroundInfoReducer,
-      fileOperations: fileOperationQueueReducer
+      fileOperations: fileOperationQueueReducer,
+      fileSelected: globalFileSelectionReducer
     },
   });
 };

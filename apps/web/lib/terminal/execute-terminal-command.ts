@@ -1,4 +1,4 @@
-import { WebContainer } from "@webcontainer/api"
+import { WebContainer, WebContainerProcess } from "@webcontainer/api"
 import { Terminal } from "@xterm/xterm"
 import { RefObject } from "react";
 
@@ -8,9 +8,10 @@ interface ExecuteTerminalCommandProps {
     command: string;
     commandHistoryRef: RefObject<string[]>;
     historyIndex: RefObject<number>;
+    processRef: RefObject<WebContainerProcess | null>
 }
 
-export const executeTerminalCommand = async ({ webContainer, command, terminal, commandHistoryRef, historyIndex }: ExecuteTerminalCommandProps) => {
+export const executeTerminalCommand = async ({ webContainer, command, terminal, commandHistoryRef, historyIndex, processRef }: ExecuteTerminalCommandProps) => {
 
     if (command.trim() && commandHistoryRef.current[commandHistoryRef.current.length - 1] !== command) {
         commandHistoryRef.current.push(command)
@@ -29,18 +30,20 @@ export const executeTerminalCommand = async ({ webContainer, command, terminal, 
             return;
         }
 
-
-        const parts = command.trim().split(' ');
+        const parts = command.trim().split('/\s+/');
         const cmd = parts[0] as string;
-        const args = parts[1] ;
+        const args = parts.slice(1).map((arg) => arg.trim());
+
 
         terminal.writeln("");
-        // const process = await webContainer.spawn(cmd, args, {
-        //     terminal: {
-        //         rows: terminal.rows,
-        //         cols: terminal.cols
-        //     }
-        // })
+        const process = await webContainer.spawn(cmd, args, {
+            terminal: {
+                rows: terminal.rows,
+                cols: terminal.cols
+            }
+        })
+
+        processRef.current = process;
     }
     catch (error) {
         terminal.write(`\r\nCommand Not Found ${command}`)

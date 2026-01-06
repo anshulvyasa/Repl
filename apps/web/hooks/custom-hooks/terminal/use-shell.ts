@@ -1,13 +1,19 @@
 import { IDisposable, Terminal } from "@xterm/xterm"
 import { WebContainer, WebContainerProcess } from '@webcontainer/api'
-import { useEffect, useRef } from "react"
+import { RefObject, useEffect, useRef } from "react"
+import { handleTerminalInput } from "@/lib/terminal/terminal-input-handler"
 
 interface useShellProps {
     terminal: Terminal | null
     webContainer: WebContainer | null
+    currentLine: RefObject<string>
+    cursorPosition: RefObject<number>
+    commandHistoryRef: RefObject<string[]>;
+    historyIndex: RefObject<number>;
+    processRef: RefObject<WebContainerProcess | null>
 }
 
-export const useShell = ({ terminal, webContainer }: useShellProps) => {
+export const useShell = ({ terminal, webContainer, currentLine, cursorPosition, commandHistoryRef, historyIndex, processRef }: useShellProps) => {
     const refStartShell = useRef<boolean>(false);
 
     useEffect(() => {
@@ -36,7 +42,7 @@ export const useShell = ({ terminal, webContainer }: useShellProps) => {
 
             const input = shellProcess.input.getWriter();
 
-            onDataDisposable = terminal.onData((data) => input.write(data));
+            onDataDisposable = terminal.onData((data) => handleTerminalInput({ data, terminal, webContainer, currentLine, cursorPosition, commandHistoryRef, historyIndex, processRef }));
             onResizeDisposable = terminal.onResize((dims) =>
                 shellProcess?.resize({ rows: dims.rows, cols: dims.cols })
             );
