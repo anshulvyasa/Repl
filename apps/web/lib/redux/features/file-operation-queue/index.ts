@@ -7,6 +7,8 @@ import {
 import { AppThunk } from "../../store";
 import axiosInstance from "@/axiosinstance";
 import { addPlaygroundTemplateFiles } from "../playground-file-data";
+import { deleteFiles, renameFiles } from "../playground-file-data";
+
 
 const defaultState: FileOperationSchemaQueueType = {
   items: [],
@@ -56,6 +58,45 @@ const slice = createSlice({
 export default slice.reducer;
 export const { addOperationToOpsQueue, clearOperationQueue, setQueueHead } =
   slice.actions;
+
+
+
+
+  export const localFileUpdateThunk = (): AppThunk => (dispatch, getState) => {
+    const fileOpsQueue = getState().fileOperations;
+
+    if (fileOpsQueue.head == -1) return;
+
+    const currentSelectedPlayground = getState().selectedPlaygroundInfo;
+    if (!currentSelectedPlayground?.id) return;
+
+    for (const item of fileOpsQueue.items) {
+        // handling renaming of current playground9
+        console.log("items os file Ops is : ", item)
+        if (currentSelectedPlayground.id === item.playgroundId && "newName" in item) {
+            const path = item.path.split('/').filter(Boolean);
+            const newName = item.newName;
+
+            if (path[path.length - 1]?.trim() === newName.trim()) continue;
+
+            dispatch(renameFiles({ path, newName }))
+        }
+
+        // handling delete Files
+        if (currentSelectedPlayground.id === item.playgroundId && !("newName" in item) && !("data" in item)) {
+            const path = item.path.split("/").filter(Boolean);
+            dispatch(deleteFiles({ path }));
+        }
+
+    }
+    
+
+    console.log("fucking running");
+    
+   
+    
+}
+
 
 //sync file operations from client to server
 export const fileQueueThunk = (): AppThunk => async (dispatch, getState) => {

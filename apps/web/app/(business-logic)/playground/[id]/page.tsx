@@ -11,6 +11,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
+
+
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -20,11 +22,12 @@ const Playground = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
+  
 
  useEffect(() => {
   async function fetchData() {
     const res = await getPlaygroundTemplateFiles(id);
-
+  
     updateSelectedPlaygroundFn(res.playground);
     sortTemplateTree(res.files.content.items);
     updatePlaygroundTemplateFiles(res.files.content);
