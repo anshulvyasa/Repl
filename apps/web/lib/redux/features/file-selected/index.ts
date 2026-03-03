@@ -1,40 +1,63 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TemplateFile } from "@repo/zod/files";
 
-export interface FileSelectedType {
-    globallySelectedFile: TemplateFile | null
-    globallySelectedFilePath: string[];
-    AllGloballySelectedFile: { file: TemplateFile, path: string[] }[]
+export interface ModifiedFileSelected {
+    file: TemplateFile;
+    isModified: boolean;  // to save it on backend
+    monacoUri: string     // to load the modal in editor
+    path: string[]        // to update the redux state 
 }
 
-const initialState: FileSelectedType = {
+export interface FilesSelected {
+    globallySelectedFile: string | null;
+    allgloballySelectedFile: Record<string, ModifiedFileSelected>;
+}
+
+const initialState: FilesSelected = {
     globallySelectedFile: null,
-    globallySelectedFilePath: [],
-    AllGloballySelectedFile: []
+    allgloballySelectedFile: {}
 }
 
-const globallySelectedFilesSlice = createSlice({
-    name: 'file-selected',
+const selectedFileSlice = createSlice({
+    name: "selectedfile",
     initialState,
     reducers: {
-        addGlobalSelectedFile(state, action: PayloadAction<{ file: TemplateFile, path: string[] }>) {
-            const { file, path } = action.payload;
-            state.globallySelectedFile = file;
-            state.globallySelectedFilePath = path
-            state.AllGloballySelectedFile.push({
-                file, path
-            })
+        addFileToSelectedFileList(state, action: PayloadAction<{ file: TemplateFile, isModified: boolean, monacoUri: string, path: string[] }>) {
+            const item = state.allgloballySelectedFile[action.payload.monacoUri];
+
+            if (item) {
+                state.globallySelectedFile = action.payload.monacoUri;
+                return;
+            }
+
+            const new_file: ModifiedFileSelected = {
+                file: action.payload.file,
+                isModified: action.payload.isModified,
+                monacoUri: action.payload.monacoUri,
+                path: action.payload.path
+            }
+
+            state.allgloballySelectedFile[action.payload.monacoUri] = new_file;
+            state.globallySelectedFile = action.payload.monacoUri;
         },
-        removeGloballySelectedFile(state) {
-            state.globallySelectedFile = null;
-            state.globallySelectedFilePath = [];
+        updateGloballySelectedFile(state, action: PayloadAction<string>) {
+            state.globallySelectedFile = action.payload;
         },
-        removeFromAllGlobalFileSelected(state, action: PayloadAction<number>) {
-            const index = action.payload;
-            state.AllGloballySelectedFile.splice(index, 1)
+        removeFileFromSelectedFileList(state, action: PayloadAction<string>) {
+            if (!state.allgloballySelectedFile[action.payload]) {
+                return;
+            }
+
+            delete state.allgloballySelectedFile[action.payload];
+
+            if (state.globallySelectedFile === action.payload) {
+                const key = Object.keys(state.allgloballySelectedFile)[0] || null;
+                state.globallySelectedFile = key;
+            }
         }
     }
 })
 
-export const { addGlobalSelectedFile, removeFromAllGlobalFileSelected, removeGloballySelectedFile } = globallySelectedFilesSlice.actions;
-export default globallySelectedFilesSlice.reducer;
+
+export default selectedFileSlice.reducer;
+export const { addFileToSelectedFileList, updateGloballySelectedFile, removeFileFromSelectedFileList } = selectedFileSlice.actions;

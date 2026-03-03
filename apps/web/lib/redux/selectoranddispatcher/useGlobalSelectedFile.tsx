@@ -1,31 +1,30 @@
-import { TemplateFile } from "@repo/zod/files";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { addGlobalSelectedFile, removeFromAllGlobalFileSelected, removeGloballySelectedFile } from "../features/file-selected";
+import { addFileToSelectedFileList, removeFileFromSelectedFileList, updateGloballySelectedFile } from "../features/file-selected";
+import { TemplateFile } from "@repo/zod/files";
 
 export const useGlobalSelectedFile = () => {
-    const { globallySelectedFile, globallySelectedFilePath, AllGloballySelectedFile } = useAppSelector(state => state.fileSelected);
+    const { globallySelectedFile, allgloballySelectedFile } = useAppSelector(state => state.fileSelected);
     const dispatch = useAppDispatch();
 
-    function addNewGlobalSelectedFile(file: TemplateFile, path: string) {
+    function addNewGlobalSelectedFile(file: TemplateFile, path: string, monacoUri: string, isModified: boolean) {
         const newpath = path.split('/').map((arg) => arg.trim());
-        dispatch(addGlobalSelectedFile({ file, path: newpath }));
+        dispatch(addFileToSelectedFileList({ file, path: newpath, monacoUri, isModified }));
     }
 
-    function removeOldGlobalSelectedFile() {
-        dispatch(removeGloballySelectedFile());
+    function removeOldGlobalSelectedFile(monacoUri: string) {
+        dispatch(removeFileFromSelectedFileList(monacoUri));
     }
 
-    function removeGloballyFileFromParticulerIndex(index: number) {
-        dispatch(removeFromAllGlobalFileSelected(index));
+    function updateGlobalSelectedFile(monacoUri: string) {
+        dispatch(updateGloballySelectedFile(monacoUri));
     }
 
 
     return {
         globallySelectedFile,
-        globallySelectedFilePath,
-        AllGloballySelectedFile,
+        allgloballySelectedFile,
         addNewGlobalSelectedFile,
         removeOldGlobalSelectedFile,
-        removeGloballyFileFromParticulerIndex
+        updateGlobalSelectedFile
     };
 }

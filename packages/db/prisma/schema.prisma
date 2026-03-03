@@ -154,3 +154,16 @@ model Templates {
   features    String[]
   category    Category
 }
+
+
+// model CaseDocument {
+//   id           String   @id @default(uuid()) // This id will be used in Smart Contract
+//   name         String // MarkDown On The Evidence
+//   majorVersion Int // majorVersion and minorVersion used for version control 
+//   minorVersion Int
+//   url          String // Map To Object Store
+//   created_At   DateTime
+
+//   case   Case   @relation(fields: [caseId], references: [id])
+//   caseId String
+// }

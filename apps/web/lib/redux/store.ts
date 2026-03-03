@@ -7,6 +7,7 @@ import playgroundTemplateFilesReducer from "./features/playground-file-data/inde
 import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
 import fileOperationQueueReducer from "./features/file-operation-queue/index"
 import globalFileSelectionReducer from './features/file-selected/index'
+import webContainerFilesReducer from './features/web-container-files/index';
 
 
 export const makeStore = () => {
@@ -19,7 +20,8 @@ export const makeStore = () => {
       playgroundTemplateFiles: playgroundTemplateFilesReducer,
       selectedPlaygroundInfo: selectedPlaygroundInfoReducer,
       fileOperations: fileOperationQueueReducer,
-      fileSelected: globalFileSelectionReducer
+      fileSelected: globalFileSelectionReducer,
+      webContainerFiles: webContainerFilesReducer
     },
   });
 };
