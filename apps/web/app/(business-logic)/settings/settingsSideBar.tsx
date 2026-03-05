@@ -14,9 +14,12 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  MonitorDot,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MENU_ITEMS = [
   { name: "Accounts", href: "/settings/accounts", icon: User },
@@ -26,25 +29,47 @@ const MENU_ITEMS = [
   { name: "Keyboards", href: "/settings/keyBoard", icon: Keyboard },
   { name: "Execution", href: "/settings/execution", icon: Play },
   { name: "Files & Auto Save", href: "/settings/filesAndAutosave", icon: FileCode },
-  
+
 ];
 
-export default function SettingsSideBar() {
+
+type SettingsSideBarProps = {
+  onClose?: () => void
+}
+
+export default function SettingsSideBar({ onClose }: SettingsSideBarProps) {
 
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
+  const isMobile = useIsMobile()
+
+  const handleMenuClick = () => {
+    if (!isMobile) return
+    setIsOpen(false)
+    onClose?.()
+  }
+
+
 
   return (
     <aside
       className={`
-        h-screen bg-[#1e1e2e] text-gray-300 flex flex-col border-r border-gray-800 
-        transition-all duration-300 ease-in-out
-        ${isOpen ? "w-64" : "w-[70px]"} 
-      `}
+    h-full bg-[#1e1e2e] text-gray-300 flex flex-col
+    border-r border-gray-800
+    transition-all duration-300 ease-in-out
+    ${isMobile
+          ? isOpen
+            ? "w-full fixed inset-0 z-50"
+            : "hidden"
+          : isOpen
+            ? "w-64"
+            : "w-17.5"
+        }
+  `}
     >
       {/* Header */}
       <div className={`p-4 border-b border-gray-800 flex items-center ${isOpen ? "justify-between" : "justify-center"}`}>
-        
+
         {/* Only show title if open */}
         {isOpen && (
           <h1 className="font-bold text-xl text-white tracking-tight whitespace-nowrap overflow-hidden">
@@ -52,14 +77,27 @@ export default function SettingsSideBar() {
           </h1>
         )}
 
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => setIsOpen(!isOpen)}
-          className="hover:bg-gray-700"
-        >
-          {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-        </Button>
+
+        {isMobile && onClose && (
+          <button
+            onClick={onClose}
+            className="p-2 text-white bg-red-500"
+          >
+            <X />
+          </button>
+        )}
+
+        {!isMobile && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setIsOpen(!isOpen)}
+            className="hover:bg-gray-700"
+          >
+            {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </Button>
+        )}
+
       </div>
 
       {/* Navigation */}
@@ -71,18 +109,20 @@ export default function SettingsSideBar() {
             <Link
               key={item.href}
               href={item.href}
-              title={!isOpen ? item.name : ""} // Shows tooltip on hover when collapsed
+              onClick={handleMenuClick}
+              title={!isOpen ? item.name : ""}
               className={`
-                flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-                ${isOpen ? "gap-3 justify-start" : "justify-center"} 
-                ${isActive
+    flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+    ${isOpen ? "gap-3 justify-start" : "justify-center"} 
+    ${isActive
                   ? "bg-gray-500 text-white shadow-md shadow-blue-500/20"
                   : "hover:bg-gray-400 hover:text-white"
                 }
-              `}
+  `}
             >
+
               {/* Icon is always visible */}
-              <item.icon size={20} className="min-w-[20px]" />
+              {!isMobile && <item.icon size={20} className="min-w-[20px]" />}
 
               {/* Text is only visible if open */}
               <span
@@ -108,4 +148,4 @@ export default function SettingsSideBar() {
       </div>
     </aside>
   );
-}
+} 
