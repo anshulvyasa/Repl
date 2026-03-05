@@ -60,6 +60,12 @@ const Playground = () => {
     setIsMonacoReady(true);
   }, [])
 
+  const handleEditorOnChange = (value: string | undefined) => {
+    if (!value|| !globallySelectedFile) return;
+
+     
+  }
+
   useEffect(() => {
     console.log(isMonacoReady)
     console.log(areTemplateFileUpdated)
@@ -126,7 +132,9 @@ const Playground = () => {
               defaultLanguage="typescript"
               language="typescript"
               theme={resolvedTheme == 'dark' ? "repl-dark" : "repl-light"}
-              beforeMount={handleEditorBeforeMount} />
+              beforeMount={handleEditorBeforeMount}
+              onChange={handleEditorOnChange} />
+
           </div>
 
         </div>
