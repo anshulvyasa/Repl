@@ -125,7 +125,7 @@ export const syncPlaygroundFiles = async (req: Request, res: Response) => {
       });
     }
 
-    const structure = structuredClone(templateFile.content) as TemplateItem;
+    const structure = structuredClone(templateFile.content) as unknown as TemplateItem;
 
     for (let i = head; i < items.length; i++) {
       const operation = items[i];

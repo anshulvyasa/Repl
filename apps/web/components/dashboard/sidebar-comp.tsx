@@ -195,7 +195,7 @@ const SidebarComponent = ({
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
-              <Link href="/settings">
+              <Link href="/settings/accounts">
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
               </Link>

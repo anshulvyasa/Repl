@@ -8,17 +8,27 @@ import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/use
 import { sortTemplateTree } from "@/lib/utils";
 import { getPlaygroundTemplateFiles } from "@/services";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import Editor, { Monaco, OnMount } from '@monaco-editor/react'
+import { useTheme } from 'next-themes'
+import { getEditorLanguage, handleEditorBeforeMount } from "@/lib/editor/config";
+import { useGlobalSelectedFile } from "@/lib/redux/selectoranddispatcher/useGlobalSelectedFile";
+import { GloballySelectedFiles } from "@/components/files/render-selected-files";
+import { createMonacoModelsFromTemplateFiles, generateFilePath } from "@/lib/editor/models";
+import * as monaco from 'monaco-editor';
+import { TemplateFile } from "@repo/zod/files";
 
 
 
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
+  const { resolvedTheme } = useTheme();
 
-  const { updatePlaygroundTemplateFiles } = useTemplatePlayground();
+  const { updatePlaygroundTemplateFiles, templatePlaygroundSelector } = useTemplatePlayground();
   const { updateSelectedPlaygroundFn, selectedPlayground } =
     useSelectedPlaygroundInfo();
+
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
@@ -32,14 +42,75 @@ const Playground = () => {
     sortTemplateTree(res.files.content.items);
     updatePlaygroundTemplateFiles(res.files.content);
   }
+  const [areTemplateFileUpdated, SetAreTemplateFileUpdated] = useState<boolean>(false);
+  const monacoRef = useRef<Monaco>(null);
+  const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
+  const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
 
-  fetchData();
+  const { globallySelectedFile, allgloballySelectedFile } = useGlobalSelectedFile();
 
-  return () => {
-    updatePlaygroundTemplateFiles(null);
-  };
-}, [id]);
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getPlaygroundTemplateFiles(id);
 
+      updateSelectedPlaygroundFn(res.playground);
+      sortTemplateTree(res.files.content.items);
+      updatePlaygroundTemplateFiles(res.files.content);
+      SetAreTemplateFileUpdated(true);
+    }
+
+    fetchData();
+
+    return () => {
+      updatePlaygroundTemplateFiles(null);
+    };
+  }, [id]);
+
+  const handleEditorMount: OnMount = useCallback((editor, monaco) => {
+    monacoRef.current = monaco;
+    editoRef.current = editor;
+    setIsMonacoReady(true);
+  }, [])
+
+  useEffect(() => {
+    console.log(isMonacoReady)
+    console.log(areTemplateFileUpdated)
+
+    if (!monacoRef.current) return;
+    if (!templatePlaygroundSelector) return;
+
+    createMonacoModelsFromTemplateFiles(templatePlaygroundSelector, monacoRef.current);
+  }, [isMonacoReady, areTemplateFileUpdated])
+
+
+  const openFileInEditor = useCallback((editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco, path: string[], file: TemplateFile) => {
+    const initialPath = generateFilePath(path, file);
+
+    const uri = monaco.Uri.parse(`file://${initialPath}`);
+    const model = monaco.editor.getModel(uri);
+
+    if (!model) {
+      console.error("Model not found for", uri);
+      return;
+    }
+
+    const language = getEditorLanguage(file.fileExtension || "");
+
+    monaco.editor.setModelLanguage(model, language);
+    editor.setModel(model);
+  }, []);
+
+  useEffect(() => {
+    if (!monacoRef.current || !editoRef.current) return;
+    if (!globallySelectedFile) return;
+
+    const ModifiedFile = allgloballySelectedFile[globallySelectedFile];
+
+    if (!ModifiedFile) return;
+
+    openFileInEditor(editoRef.current, monacoRef.current, ModifiedFile?.path, ModifiedFile.file);
+
+  }, [globallySelectedFile])
 
   return (
     <TooltipProvider>
@@ -60,6 +131,16 @@ const Playground = () => {
               {selectedPlayground?.title || "Code Playground"}
             </h1>
           </header>
+          <GloballySelectedFiles />
+          <div className="mt-[1px] flex-1 min-h-0">
+            <Editor
+              onMount={handleEditorMount}
+              defaultLanguage="typescript"
+              language="typescript"
+              theme={resolvedTheme == 'dark' ? "repl-dark" : "repl-light"}
+              beforeMount={handleEditorBeforeMount} />
+          </div>
+
         </div>
       </div>
     </TooltipProvider>

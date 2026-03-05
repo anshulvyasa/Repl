@@ -48,15 +48,15 @@ export const RenderFolder = ({
   }, [folder.items]);
 
   const handleLocalSelected = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (localSelected) {
-      setRenameState(true);
-      return;
-    }
-    setLocalSelected(true);
-    setTimeout(() => {
-      setLocalSelected(false);
-    }, 300);
+    // e.stopPropagation();
+    // if (localSelected) {
+    //   setRenameState(true);
+    //   return;
+    // }
+    // setLocalSelected(true);
+    // setTimeout(() => {
+    //   setLocalSelected(false);
+    // }, 300);
   };
 
   useEffect(() => {

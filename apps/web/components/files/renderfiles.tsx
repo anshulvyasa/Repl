@@ -1,3 +1,5 @@
+"use client";
+
 import { TemplateFile, TemplateItem } from "@repo/zod/files";
 import React, { useEffect, useRef, useState } from "react";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
@@ -5,7 +7,9 @@ import { File } from "lucide-react";
 import FilesOperation from "./file-operation";
 import { RenameFiles } from "./rename-files";
 import { DeleteFilesComp } from "./delete-files";
-
+import { useGlobalSelectedFile } from "@/lib/redux/selectoranddispatcher/useGlobalSelectedFile";
+// import * as monaco from 'monaco-editor';
+import { generateFilePath } from "@/lib/editor/models";
 
 
 export const RenderFile = ({
@@ -23,18 +27,21 @@ export const RenderFile = ({
     const [renameState, setRenameState] = useState<boolean>(false);
     const [localSelected, setLocalSelected] = useState<boolean>(false);
     const [deleteState, setDeleteState] = useState<boolean>(false);
+    const { addNewGlobalSelectedFile } = useGlobalSelectedFile();
 
     const componentRef = useRef<HTMLLIElement>(null);
 
     const handleLocalSelected = (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        if (localSelected) {
-            setRenameState(true);
-            return;
-        }
-        setLocalSelected(true);
-        setTimeout(() => { setLocalSelected(false) }, 300)
+        const initialPath = generateFilePath(path.split("/"), file); // redundant stuff but we want consistency that's why we are doing it
+        // const uri = monaco.Uri.parse(`file://${initialPath}`);
+        import("monaco-editor").then((monaco) => {
+            const uri = monaco.Uri.parse(`file://${initialPath}`);
+            addNewGlobalSelectedFile(file, path, uri.toString(), false);
+        });
+
+
     };
 
     useEffect(() => {

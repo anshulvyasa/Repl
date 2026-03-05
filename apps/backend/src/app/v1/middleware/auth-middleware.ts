@@ -6,6 +6,7 @@ export const authMiddleWare = async (
   next: NextFunction
 ) => {
   const { decode } = await import("@auth/core/jwt");
+  
   const sessionToken =
     req.cookies["authjs.session-token"] ||
     req.cookies["__Secure-authjs.session-token"];
