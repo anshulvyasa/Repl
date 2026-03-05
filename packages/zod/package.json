@@ -11,7 +11,8 @@
   "exports": {
     "./playground": "./src/playground/index.ts",
     "./files": "./src/files/index.ts",
-    "./files-operation-queue": "./src/files-operation-queue/index.ts"
+    "./files-operation-queue": "./src/files-operation-queue/index.ts",
+    "./selected-files":"./src/selected-files/index.ts"
   },
   "keywords": [],
   "author": "",
