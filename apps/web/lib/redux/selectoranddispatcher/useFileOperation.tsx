@@ -1,13 +1,15 @@
 import { FileOperationSchemaType } from "@repo/zod/files-operation-queue";
 import { useAppDispatch, useAppSelector } from "../hooks"
-import { addOperationToOpsQueue, clearOperationQueue, fileQueueThunk,  } from "../features/file-operation-queue";
+import { addOperationToOpsQueue, clearOperationQueue, fileQueueThunk, localFileUpdateThunk,  } from "../features/file-operation-queue";
 
 export const useFileOperations = () => {
     const fileOpsQueue = useAppSelector(state => state.fileOperations)
 
     const dispatch = useAppDispatch();
     function addOpsToOpsQueue(ops: FileOperationSchemaType) {
+        dispatch(localFileUpdateThunk())
         dispatch(addOperationToOpsQueue(ops))
+        
         dispatch(fileQueueThunk())
     }
     
