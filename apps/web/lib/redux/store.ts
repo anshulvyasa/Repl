@@ -8,7 +8,7 @@ import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
 import fileOperationQueueReducer from "./features/file-operation-queue/index"
 import globalFileSelectionReducer from './features/file-selected/index'
 import webContainerFilesReducer from './features/web-container-files/index';
-import { selectedFileMiddleware } from "./middleware";
+import { reduxMiddleware } from "./middleware";
 
 
 const rootReducer = combineReducers({
@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
 export const makeStore = () => {
   return configureStore({
     reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(selectedFileMiddleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(reduxMiddleware),
   });
 };
 

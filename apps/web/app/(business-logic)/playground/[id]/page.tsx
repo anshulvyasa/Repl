@@ -5,9 +5,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
-import { sortTemplateTree } from "@/lib/utils";
-import { getPlaygroundTemplateFiles } from "@/services";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import Editor, { Monaco, OnMount } from '@monaco-editor/react'
@@ -24,40 +21,32 @@ const DUMMY_MODEL_URI = "file:///dummy/welcome.ts";
 const DUMMY_MODEL_CONTENT = `// Welcome To Repl. it's a pleasure to have you onboard. please select file to continue editing.`;
 
 const Playground = () => {
-  const { id } = useParams<{ id: string }>();
   const { resolvedTheme } = useTheme();
 
-  const { updatePlaygroundTemplateFiles, templatePlaygroundSelector } = useTemplatePlayground();
-  const { updateSelectedPlaygroundFn, selectedPlayground } =
-    useSelectedPlaygroundInfo();
+  const {  templatePlaygroundSelector } = useTemplatePlayground();
+  const {  selectedPlayground } = useSelectedPlaygroundInfo();
   const { globallySelectedFile, allgloballySelectedFile, updateContentOfGlobalSelectedFile, initializeIntialStateOfSelectedFiles } = useGlobalSelectedFile();
-
-
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
-  const [areTemplateFileUpdated, SetAreTemplateFileUpdated] = useState<boolean>(false);
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
   const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
 
+  //   async function fetchData() {
+  //     const res = await getPlaygroundTemplateFiles(id);
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await getPlaygroundTemplateFiles(id);
+  //     updateSelectedPlaygroundFn(res.playground);
+  //     sortTemplateTree(res.files.content.items);
+  //     updatePlaygroundTemplateFiles(res.files.content);
+  //   }
 
-      updateSelectedPlaygroundFn(res.playground);
-      sortTemplateTree(res.files.content.items);
-      updatePlaygroundTemplateFiles(res.files.content);
-      SetAreTemplateFileUpdated(true);
-    }
+  //   fetchData();
 
-    fetchData();
-
-    return () => {
-      updatePlaygroundTemplateFiles(null);
-    };
-  }, [id]);
+  //   return () => {
+  //     updatePlaygroundTemplateFiles(null);
+  //   };
+  // }, [id]);
 
   const handleEditorMount: OnMount = useCallback((editor, monaco) => {
     monacoRef.current = monaco;
@@ -80,7 +69,7 @@ const Playground = () => {
 
   useEffect(() => {
     console.log(isMonacoReady)
-    console.log(areTemplateFileUpdated)
+ 
 
     if (!monacoRef.current) return;
     if (!templatePlaygroundSelector || !selectedPlayground) return;
@@ -91,7 +80,7 @@ const Playground = () => {
     if (!parsedData) return;
 
     initializeIntialStateOfSelectedFiles(parsedData);
-  }, [isMonacoReady, areTemplateFileUpdated])
+  }, [isMonacoReady])
 
 
   const openFileInEditor = useCallback((editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco, path: string[], file: TemplateFile) => {
