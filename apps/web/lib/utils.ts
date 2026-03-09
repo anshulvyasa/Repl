@@ -53,3 +53,7 @@ export function sortTemplateTree(items: TemplateItem[]): TemplateItem[] {
         : item
     );
 }
+
+export const loadSelectedFileFromCache=()=>{
+    
+}

@@ -1,7 +1,8 @@
 import { sortTemplateTree } from "@/lib/utils";
+import { TemplateFile } from "@prisma/client";
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { deleteFilesOrFolder, renameFilesOrFolder, addFileOrFolder } from "@repo/utilities/files-operation";
-import { TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
+import { TemplateFolder, TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
 
 export type TemplateFilesTypes = TemplateFolderSchemaType | null;
 
@@ -63,9 +64,48 @@ const playgroundTemplateFiles = createSlice({
       if ("folderName" in state) {
         sortTemplateTree(state.items);
       }
+    },
+
+    updateFileContent(state, action: PayloadAction<{ path: string[], newContent: string }>) {
+      const { path, newContent } = action.payload;
+      if (!state || !path || path.length === 0) return;
+
+      const foldersToTraverse = path.slice(1, -1);
+      const targetFileName = path[path.length - 1];
+
+      let currentFolder = state;
+
+      for (const folderName of foldersToTraverse) {
+        const nextFolder = currentFolder.items.find(
+          (item) => "folderName" in item && item.folderName.trim() === folderName.trim()
+        ) as TemplateFolder | undefined;
+
+        if (!nextFolder) return;
+
+        currentFolder = nextFolder;
+      }
+
+      const targetFile = currentFolder.items.find(
+        (item) =>
+          "fileName" in item &&
+          generateFileName(item.fileName, item.fileExtension) === targetFileName
+      ) as TemplateFile | undefined;
+
+      if (targetFile) {
+        targetFile.content = newContent; // Immer handles this mutation safely!
+      }
     }
   },
 });
 
-export const { addPlaygroundTemplateFiles, renameFiles, deleteFiles, addFiles, sortSubFiles } = playgroundTemplateFiles.actions;
+export const { addPlaygroundTemplateFiles, renameFiles, deleteFiles, addFiles, sortSubFiles, updateFileContent } = playgroundTemplateFiles.actions;
 export default playgroundTemplateFiles.reducer;
+
+
+// helper
+const generateFileName = (fileName: string, fileExtension: string) => {
+  if (fileExtension.trim() === "") return fileName;
+
+  return `${fileName}.${fileExtension}`
+}
+

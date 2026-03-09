@@ -1,5 +1,5 @@
 import { TemplateFolderSchemaType, TemplateItem } from "@repo/zod/files";
-import { addFiles, addPlaygroundTemplateFiles, deleteFiles, renameFiles, sortSubFiles, } from "../features/playground-file-data";
+import { addFiles, addPlaygroundTemplateFiles, deleteFiles, renameFiles, sortSubFiles, updateFileContent, } from "../features/playground-file-data";
 import { useAppDispatch, useAppSelector } from "../hooks";
 
 export const useTemplatePlayground = () => {
@@ -11,36 +11,35 @@ export const useTemplatePlayground = () => {
   const updatePlaygroundTemplateFiles = (files: TemplateFolderSchemaType | null) => {
     dispatch(addPlaygroundTemplateFiles(files));
   };
-const renameTemplateFilesOrFolder = (path: string[], newName: string) => {
-  dispatch(
-    renameFiles({
-      path, 
-      newName,
-    })
-  );
-};
+  const renameTemplateFilesOrFolder = (path: string[], newName: string) => {
+    dispatch(
+      renameFiles({
+        path,
+        newName,
+      })
+    );
+  };
 
-const deleteTemplateFiles = (path: string[]) => {
-  dispatch(
-    deleteFiles({
-      path, 
-    })
-  );
-};
+  const deleteTemplateFiles = (path: string[]) => {
+    dispatch(
+      deleteFiles({
+        path,
+      })
+    );
+  };
 
-const addTemplateFiles = (data: TemplateItem, path: string[]) => {
-  dispatch(
-    addFiles({
-      data,
-      path,
-    })
-  );
-};
+  const addTemplateFiles = (data: TemplateItem, path: string[]) => {
+    dispatch(
+      addFiles({
+        data,
+        path,
+      })
+    );
+  };
 
-
-
-
-
+  const updateFile = (path: string[], newContent: string) => {
+    dispatch(updateFileContent({ path, newContent }));
+  }
 
   return {
     updatePlaygroundTemplateFiles,
@@ -48,6 +47,6 @@ const addTemplateFiles = (data: TemplateItem, path: string[]) => {
     renameTemplateFilesOrFolder,
     deleteTemplateFiles,
     addTemplateFiles,
-    
+    updateFile
   };
 };
