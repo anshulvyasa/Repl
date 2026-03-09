@@ -19,8 +19,6 @@ import { createMonacoModelsFromTemplateFiles, generateFilePath } from "@/lib/edi
 import * as monaco from 'monaco-editor';
 import { TemplateFile } from "@repo/zod/files";
 
-
-
 const Playground = () => {
   const { id } = useParams<{ id: string }>();
   const { resolvedTheme } = useTheme();
@@ -32,16 +30,6 @@ const Playground = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
-  
-
- useEffect(() => {
-  async function fetchData() {
-    const res = await getPlaygroundTemplateFiles(id);
-  
-    updateSelectedPlaygroundFn(res.playground);
-    sortTemplateTree(res.files.content.items);
-    updatePlaygroundTemplateFiles(res.files.content);
-  }
   const [areTemplateFileUpdated, SetAreTemplateFileUpdated] = useState<boolean>(false);
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
@@ -71,6 +59,12 @@ const Playground = () => {
     editoRef.current = editor;
     setIsMonacoReady(true);
   }, [])
+
+  const handleEditorOnChange = (value: string | undefined) => {
+    if (!value|| !globallySelectedFile) return;
+
+     
+  }
 
   useEffect(() => {
     console.log(isMonacoReady)
@@ -138,7 +132,9 @@ const Playground = () => {
               defaultLanguage="typescript"
               language="typescript"
               theme={resolvedTheme == 'dark' ? "repl-dark" : "repl-light"}
-              beforeMount={handleEditorBeforeMount} />
+              beforeMount={handleEditorBeforeMount}
+              onChange={handleEditorOnChange} />
+
           </div>
 
         </div>

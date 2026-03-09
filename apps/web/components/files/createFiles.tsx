@@ -19,7 +19,7 @@ const calcNewFile = (data: TemplateItem, originalName: string) => {
         let nameOnly = originalName;
         let extension = "";
 
-        if (index !== -1) {
+        if (index !== -1 ) {
             nameOnly = originalName.slice(0, index);
             extension = originalName.slice(index + 1);
         }
@@ -64,8 +64,11 @@ export const CreateFilesOrFolder = ({ path, createFileFolderValue, setCreateFile
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Enter") {
-                const newFile = calcNewFile(createFileFolderValue, fileName);
-                handleAdd(newFile, path);
+                if (fileName.trim()){
+                     const newFile = calcNewFile(createFileFolderValue, fileName);
+                     handleAdd(newFile, path);
+                }
+              
                 setCreateFileFolderValue(null);
             }
 
@@ -85,15 +88,18 @@ export const CreateFilesOrFolder = ({ path, createFileFolderValue, setCreateFile
 
 
 
-    useLayoutEffect(() => {
+   useLayoutEffect(() => {
+    
+    const timeoutId = setTimeout(() => {
         const el = inputRef.current;
-        if (!el) return;
+        if (el) {
+            el.focus();
+            el.select(); 
+        }
+    }, 10);
 
-        if (document.activeElement === el) return;
-
-        el.focus();
-        el.select();
-    });
+    return () => clearTimeout(timeoutId);
+}, []); 
 
     return (
         <SidebarMenuItem className="w-full" ref={elementRef}>
