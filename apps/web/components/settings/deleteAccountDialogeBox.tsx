@@ -18,7 +18,6 @@ export default function deleteAccountDialogeBox (){
                     <button className=" bg-red-500 text-white"> delete</button>
                 </div>
             </CardHeader>
-
         </Card>
     )
 }

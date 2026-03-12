@@ -1,27 +1,50 @@
-import React from "react";
-import Link from "next/link";
-import { X } from "lucide-react";
+"use client"
 
-import SettingsSideBar from "./settingsSideBar"
+import { useState } from "react"
+import Link from "next/link"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { ChevronRight, X } from "lucide-react"
 
-export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-    return (
-     <div className="flex">
-      <aside>
-         <SettingsSideBar /> 
-      </aside>
-      <main className="flex-1 p-4">
+export default function SettingsLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const isMobile = useIsMobile()
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
+  return (
+    <div className="relative flex h-screen ">
+      {isMobile && !mobileSidebarOpen && (
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="fixed top-4 left-4 z-40 rounded-lg bg-[#1e1e2e] p-2 text-white shadow-lg"
+        >
+          <ChevronRight size={18} />
+        </button>
+      )}
+
+      <main
+        className={`
+          flex-1 p-4 transition-all
+          ${isMobile && mobileSidebarOpen ? "hidden" : "block"}
+        `}
+      >
+       
         <div className="flex justify-end">
-          <Link href="/dashboard" className="p-2 rounded-full transition-colors hover:bg-red-500 hover:scale-105"> 
-            <X size={24} className="text-gray-400 hover:text-white"/>
+          <Link
+            href="/dashboard"
+            className="p-2 rounded-full transition hover:bg-red-500"
+          >
+            <X className="text-gray-400 hover:text-white" />
           </Link>
         </div>
-        <div className="ml-auto mt-auto mr-5">
-          {children} 
-        </div>
+
         
+        <div className="mt-4">
+          {children}
+        </div>
       </main>
     </div>
-    )
-
+  )
 }

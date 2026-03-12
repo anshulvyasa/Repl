@@ -12,6 +12,7 @@ import getUserInfo from "@/lib/get_user";
 import { prisma } from "@repo/db";
 import RemovePicButton from "../../../../components/settings/removeProfilePic/removeButton"
 
+
 export default async function AccountSettings() {
   const user = await getUserInfo();
 
@@ -117,9 +118,10 @@ export default async function AccountSettings() {
 
         {/* Delete Account Section */}
         <CardContent className="border-t pt-6">
-          <DeleteAccountButton />
+          <DeleteAccountButton/>
         </CardContent>
       </Card>
     </div>
   );
 }
+
