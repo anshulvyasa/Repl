@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useIsMobile } from "@/hooks/use-mobile"
-import SettingsSideBar from "./settingsSideBar"
 import { ChevronRight, X } from "lucide-react"
 
 export default function SettingsLayout({
@@ -23,10 +22,6 @@ export default function SettingsLayout({
         >
           <ChevronRight size={18} />
         </button>
-      )}
-
-      {(!isMobile || mobileSidebarOpen) && (
-        <SettingsSideBar onClose={() => setMobileSidebarOpen(false)} />
       )}
 
       <main
