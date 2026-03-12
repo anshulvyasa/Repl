@@ -3,12 +3,16 @@
 import { X } from "lucide-react";
 import { useGlobalSelectedFile } from "@/lib/redux/selectoranddispatcher/useGlobalSelectedFile";
 import { useDispatch } from "react-redux";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { useState } from "react";
+import { AlertDialogHeader } from "../ui/alert-dialog";
 // import { removeFile, updateGloballySelectedFile } from "";
 
 export const GloballySelectedFiles = () => {
     const dispatch = useDispatch();
     const { allgloballySelectedFile, globallySelectedFile, updateGlobalSelectedFile, removeOldGlobalSelectedFile } =
         useGlobalSelectedFile();
+    const [isRemoveDialogOpen,setIsRemoveDialogOpen]=useState(false);
 
     const files = Object.values(allgloballySelectedFile);
 
@@ -34,10 +38,9 @@ export const GloballySelectedFiles = () => {
                         <span className="text-sm whitespace-nowrap">
                             {file.file.fileName}.{file.file.fileExtension}
                             {file.isModified && (
-                                <span className="ml-1 text-xs text-destructive">*</span>
+                                <span className="ml-2 inline-block rounded-full h-2 w-2 bg-yellow-700" />
                             )}
                         </span>
-
                         {/* Close Button */}
                         <button
                             onClick={(e) => {
@@ -48,9 +51,12 @@ export const GloballySelectedFiles = () => {
                         >
                             <X size={14} />
                         </button>
+
                     </div>
                 );
             })}
         </div>
     );
 };
+
+

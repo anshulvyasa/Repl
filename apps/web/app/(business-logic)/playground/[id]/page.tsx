@@ -5,9 +5,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
-import { sortTemplateTree } from "@/lib/utils";
-import { getPlaygroundTemplateFiles } from "@/services";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import Editor, { Monaco, OnMount } from '@monaco-editor/react'
@@ -18,75 +15,72 @@ import { GloballySelectedFiles } from "@/components/files/render-selected-files"
 import { createMonacoModelsFromTemplateFiles, generateFilePath } from "@/lib/editor/models";
 import * as monaco from 'monaco-editor';
 import { TemplateFile } from "@repo/zod/files";
+import { readSelectedFilesFromLocalStorage } from "@/lib/redux/middleware";
 
-
+const DUMMY_MODEL_URI = "file:///dummy/welcome.ts";
+const DUMMY_MODEL_CONTENT = `// Welcome To Repl. it's a pleasure to have you onboard. please select file to continue editing.`;
 
 const Playground = () => {
-  const { id } = useParams<{ id: string }>();
   const { resolvedTheme } = useTheme();
 
-  const { updatePlaygroundTemplateFiles, templatePlaygroundSelector } = useTemplatePlayground();
-  const { updateSelectedPlaygroundFn, selectedPlayground } =
-    useSelectedPlaygroundInfo();
-
+  const {  templatePlaygroundSelector } = useTemplatePlayground();
+  const {  selectedPlayground } = useSelectedPlaygroundInfo();
+  const { globallySelectedFile, allgloballySelectedFile, updateContentOfGlobalSelectedFile, initializeIntialStateOfSelectedFiles } = useGlobalSelectedFile();
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
-  
-
- useEffect(() => {
-  async function fetchData() {
-    const res = await getPlaygroundTemplateFiles(id);
-  
-    updateSelectedPlaygroundFn(res.playground);
-    sortTemplateTree(res.files.content.items);
-    updatePlaygroundTemplateFiles(res.files.content);
-  }
-  const [areTemplateFileUpdated, SetAreTemplateFileUpdated] = useState<boolean>(false);
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
   const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
 
-  const { globallySelectedFile, allgloballySelectedFile } = useGlobalSelectedFile();
+  //   async function fetchData() {
+  //     const res = await getPlaygroundTemplateFiles(id);
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await getPlaygroundTemplateFiles(id);
+  //     updateSelectedPlaygroundFn(res.playground);
+  //     sortTemplateTree(res.files.content.items);
+  //     updatePlaygroundTemplateFiles(res.files.content);
+  //   }
 
-      updateSelectedPlaygroundFn(res.playground);
-      sortTemplateTree(res.files.content.items);
-      updatePlaygroundTemplateFiles(res.files.content);
-      SetAreTemplateFileUpdated(true);
-    }
+  //   fetchData();
 
-    fetchData();
-
-    return () => {
-      updatePlaygroundTemplateFiles(null);
-    };
-  }, [id]);
+  //   return () => {
+  //     updatePlaygroundTemplateFiles(null);
+  //   };
+  // }, [id]);
 
   const handleEditorMount: OnMount = useCallback((editor, monaco) => {
     monacoRef.current = monaco;
     editoRef.current = editor;
     setIsMonacoReady(true);
+
+    const dummyUri = monaco.Uri.parse(DUMMY_MODEL_URI);
+    if (!monaco.editor.getModel(dummyUri)) {
+      monaco.editor.createModel(DUMMY_MODEL_CONTENT, "typescript", dummyUri);
+    }
   }, [])
 
   const handleEditorOnChange = (value: string | undefined) => {
-    if (!value|| !globallySelectedFile) return;
+    if (!value || !globallySelectedFile) return;
 
-     
+
+    // mark globally selected file as modified
+    updateContentOfGlobalSelectedFile(value);
   }
 
   useEffect(() => {
     console.log(isMonacoReady)
-    console.log(areTemplateFileUpdated)
+ 
 
     if (!monacoRef.current) return;
-    if (!templatePlaygroundSelector) return;
+    if (!templatePlaygroundSelector || !selectedPlayground) return;
 
     createMonacoModelsFromTemplateFiles(templatePlaygroundSelector, monacoRef.current);
-  }, [isMonacoReady, areTemplateFileUpdated])
+
+    const parsedData = readSelectedFilesFromLocalStorage(selectedPlayground?.id);
+    if (!parsedData) return;
+
+    initializeIntialStateOfSelectedFiles(parsedData);
+  }, [isMonacoReady])
 
 
   const openFileInEditor = useCallback((editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco, path: string[], file: TemplateFile) => {
@@ -108,7 +102,18 @@ const Playground = () => {
 
   useEffect(() => {
     if (!monacoRef.current || !editoRef.current) return;
-    if (!globallySelectedFile) return;
+    if (!globallySelectedFile) {
+
+      const dummyUri = monacoRef.current.Uri.parse(DUMMY_MODEL_URI);
+      const dummyModel = monacoRef.current.editor.getModel(dummyUri);
+      if (dummyModel) {
+        editoRef.current.setModel(dummyModel);
+        editoRef.current.updateOptions({ readOnly: true });
+      }
+      return;
+    }
+
+    editoRef.current.updateOptions({ readOnly: false });
 
     const ModifiedFile = allgloballySelectedFile[globallySelectedFile];
 
@@ -116,7 +121,7 @@ const Playground = () => {
 
     openFileInEditor(editoRef.current, monacoRef.current, ModifiedFile?.path, ModifiedFile.file);
 
-  }, [globallySelectedFile])
+  }, [globallySelectedFile, isMonacoReady])
 
   return (
     <TooltipProvider>
@@ -146,7 +151,6 @@ const Playground = () => {
               theme={resolvedTheme == 'dark' ? "repl-dark" : "repl-light"}
               beforeMount={handleEditorBeforeMount}
               onChange={handleEditorOnChange} />
-
           </div>
 
         </div>

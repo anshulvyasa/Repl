@@ -7,7 +7,9 @@ export const createMonacoModelsFromTemplateFiles = (
     monaco: Monaco
 ) => {
 
-    console.log("Inside the Model GeneratorF");
+    // deriving modal for uri
+
+
     const pathToContent: Map<string, string> = new Map();
     const path: string[] = [];
 

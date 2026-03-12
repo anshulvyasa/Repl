@@ -124,12 +124,10 @@ useEffect(() => {
 
 
 
-
   return (
     // <Sidebar>
       <SidebarProvider className="flex min-h-screen w-full overflow-x-hidden">
         <SidebarComponent initialDataPlayground={formattedPlaygroundData} />
-        <SidebarTrigger />
         <main className="flex-1">{children}</main>
       </SidebarProvider>
    

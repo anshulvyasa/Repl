@@ -54,10 +54,24 @@ const selectedFileSlice = createSlice({
                 const key = Object.keys(state.allgloballySelectedFile)[0] || null;
                 state.globallySelectedFile = key;
             }
+        },
+        updateContentOfGloballySelectedFile(state, action: PayloadAction<string>) {
+            const key = state.globallySelectedFile;
+
+            if (!key) return;
+
+            const file = state.allgloballySelectedFile[key];
+            if (!file) return;
+
+            file.isModified = true;
+            file.file.content = action.payload;
+        },
+        initializeInitialStateFromLocalStorage(state, action: PayloadAction<FilesSelected>) {
+            return action.payload;
         }
     }
 })
 
 
 export default selectedFileSlice.reducer;
-export const { addFileToSelectedFileList, updateGloballySelectedFile, removeFileFromSelectedFileList } = selectedFileSlice.actions;
+export const { addFileToSelectedFileList, updateGloballySelectedFile, removeFileFromSelectedFileList, updateContentOfGloballySelectedFile, initializeInitialStateFromLocalStorage } = selectedFileSlice.actions;
