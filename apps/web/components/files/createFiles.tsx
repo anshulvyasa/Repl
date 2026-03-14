@@ -2,6 +2,15 @@ import { TemplateFile, TemplateFolder, TemplateItem } from "@repo/zod/files"
 import { ChevronRight, File, Folder } from "lucide-react"
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import FilesOperation from "./file-operation";
+import { DeleteFilesComp } from "./delete-files";
+
+interface CreateFilesOrFolderType {
+    path: string
+    createFileFolderValue: TemplateItem
+    setCreateFileFolderValue: React.Dispatch<React.SetStateAction<null | TemplateFile | TemplateFolder>>
+    handleAdd: (data: TemplateItem, path: string) => void
+}
 
 interface CreateFilesOrFolderType {
     path: string
@@ -32,7 +41,8 @@ const calcNewFile = (data: TemplateItem, originalName: string) => {
     } else {
         newFile = {
             ...data,
-            folderName: originalName
+            folderName: originalName,
+            fileExtension: "",
         };
     }
     return newFile;
@@ -40,6 +50,7 @@ const calcNewFile = (data: TemplateItem, originalName: string) => {
 
 export const CreateFilesOrFolder = ({ path, createFileFolderValue, setCreateFileFolderValue, handleAdd }: CreateFilesOrFolderType) => {
     const [fileName, setFileName] = useState<string>("fileName" in createFileFolderValue ? createFileFolderValue.fileName : createFileFolderValue.folderName);
+    const [deleteState, setDeleteState] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const elementRef = useRef<HTMLLIElement>(null);
 
