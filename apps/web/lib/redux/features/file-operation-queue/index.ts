@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  FileOperationSchemaType,
   FileOperationSchemaQueueType,
   FileOperationSchemaQueue,
 } from "@repo/zod/files-operation-queue";
@@ -89,12 +88,7 @@ export const { addOperationToOpsQueue, clearOperationQueue, setQueueHead } =
         }
 
     }
-    
-
-    console.log("fucking running");
-    
-   
-    
+        
 }
 
 
