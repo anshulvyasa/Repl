@@ -18,6 +18,11 @@
       "types": "./src/files-operation-queue/index.ts",
       "import": "./src/files-operation-queue/index.ts",
       "require": "./src/files-operation-queue/index.ts"
+    },
+    "./selected-files": {
+      "types": "./src/selected-files/index.ts",
+      "import": "./src/selected-files/index.ts",
+      "require": "./src/selected-files/index.ts"
     }
   },
   "dependencies": {
