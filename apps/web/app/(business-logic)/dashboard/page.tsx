@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react"; // Import useEffect
+import { useEffect } from "react"; 
 import { AddNewButton } from "@/components/dashboard/add-new-button";
 import { AddRepo } from "@/components/dashboard/add-repo";
 import { DashBoardTable } from "@/components/dashboard/dashboard-table";
@@ -12,8 +12,8 @@ const DashboardPage = () => {
   
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen mx-auto max-w-7xl px-4 py-10 ">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+    <div className="flex flex-col items-center justify-start min-h-screen mx-auto w-full px-8 py-8 overflow-hidden ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <AddNewButton />
         <AddRepo />
       </div>

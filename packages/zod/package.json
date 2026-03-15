@@ -1,20 +1,32 @@
 {
   "name": "@repo/zod",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    "./playground": {
+      "types": "./src/playground/index.ts",
+      "import": "./src/playground/index.ts",
+      "require": "./src/playground/index.ts"
+    },
+    "./files": {
+      "types": "./src/files/index.ts",
+      "import": "./src/files/index.ts",
+      "require": "./src/files/index.ts"
+    },
+    "./files-operation-queue": {
+      "types": "./src/files-operation-queue/index.ts",
+      "import": "./src/files-operation-queue/index.ts",
+      "require": "./src/files-operation-queue/index.ts"
+    },
+    "./selected-files": {
+      "types": "./src/selected-files/index.ts",
+      "import": "./src/selected-files/index.ts",
+      "require": "./src/selected-files/index.ts"
+    }
+  },
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
     "zod": "^4.1.12"
-  },
-  "exports": {
-    "./playground": "./src/playground/index.ts",
-    "./files": "./src/files/index.ts",
-    "./files-operation-queue": "./src/files-operation-queue/index.ts",
-    "./selected-files":"./src/selected-files/index.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  }
 }
