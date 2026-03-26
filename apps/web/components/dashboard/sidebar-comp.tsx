@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { AlertDialog } from "../ui/alert-dialog";
 
 interface PlaygroundData {
   id: string;
@@ -67,6 +68,9 @@ const SidebarComponent = ({
   const [recentPlayGround, setRecentPlayGround] = useState(
     initialDataPlayground
   );
+
+
+
 
   useEffect(() => {
     setRecentPlayGround(initialDataPlayground);
