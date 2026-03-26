@@ -17,8 +17,6 @@ import * as monaco from 'monaco-editor';
 import { TemplateFile } from "@repo/zod/files";
 import { readSelectedFilesFromLocalStorage } from "@/lib/redux/middleware";
 
-const DUMMY_MODEL_URI = "file:///dummy/welcome.ts";
-const DUMMY_MODEL_CONTENT = `// Welcome To Repl. it's a pleasure to have you onboard. please select file to continue editing.`;
 
 const Playground = () => {
   const { resolvedTheme } = useTheme();
@@ -29,6 +27,7 @@ const Playground = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
+  const [areTemplateFileUpdated, SetAreTemplateFileUpdated] = useState<boolean>(false);
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
   const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
@@ -60,11 +59,9 @@ const Playground = () => {
   }, [])
 
   const handleEditorOnChange = (value: string | undefined) => {
-    if (!value || !globallySelectedFile) return;
+    if (!value|| !globallySelectedFile) return;
 
-
-    // mark globally selected file as modified
-    updateContentOfGlobalSelectedFile(value);
+     
   }
 
   useEffect(() => {
@@ -151,6 +148,7 @@ const Playground = () => {
               theme={resolvedTheme == 'dark' ? "repl-dark" : "repl-light"}
               beforeMount={handleEditorBeforeMount}
               onChange={handleEditorOnChange} />
+
           </div>
 
         </div>

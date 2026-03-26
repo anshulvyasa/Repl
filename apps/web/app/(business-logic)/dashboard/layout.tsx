@@ -124,13 +124,26 @@ useEffect(() => {
 
 
 
-  return (
-    // <Sidebar>
-      <SidebarProvider className="flex min-h-screen w-full overflow-x-hidden">
-        <SidebarComponent initialDataPlayground={formattedPlaygroundData} />
-        <main className="flex-1">{children}</main>
-      </SidebarProvider>
-   
+ return (
+    <SidebarProvider className="flex min-h-screen w-full">
+      <SidebarComponent initialDataPlayground={formattedPlaygroundData} />
+      
+      <main className="flex-1 flex flex-col min-w-0 bg-background">
+       
+        <header className="flex h-16 items-center gap-4 border-b px-6 [@media(min-width:1286px)]:hidden shrink-0">
+          <SidebarTrigger />
+          <div className="flex items-center gap-2 ml-2">
+            <img src="/logo.svg" alt="Logo" className="h-6 w-6" />
+            <span className="font-bold text-sm">Repl</span>
+          </div>
+        </header>
+
+      
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
+      </main>
+    </SidebarProvider>
   );
 };
 

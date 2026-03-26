@@ -101,14 +101,19 @@ const FilesOperation = ({ isFolder, setRenameState, setDeleteState, setCreateFil
           <Plus className="h-4 w-4" />
         </SidebarMenuAction>
       </DropdownMenuTrigger>
+      
 
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
         {isFolder && <>
-          <DropdownMenuItem onClick={() => handleFileCreatingValueUpdate()}>
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation(); 
+            handleFileCreatingValueUpdate()}}>
             <FilePlus className="h-4 w-4 mr-2" />
             <span>Add File</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleFolderCreatingValueUpdate()}>
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation(); 
+            handleFolderCreatingValueUpdate()}}>
             <FolderPlus className="h-4 w-4 mr-2" />
             <span>Add Folder</span>
           </DropdownMenuItem>

@@ -94,6 +94,7 @@ export const { addOperationToOpsQueue, clearOperationQueue, setQueueHead } =
 
 //sync file operations from client to server
 export const fileQueueThunk = (): AppThunk => async (dispatch, getState) => {
+ 
   const { fileOperations, selectedPlaygroundInfo } = getState();
 
   if (!selectedPlaygroundInfo?.id) return;

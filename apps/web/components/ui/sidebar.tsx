@@ -207,14 +207,14 @@ function Sidebar({
 
   return (
     <div
-      className="group peer text-sidebar-foreground hidden md:block"
+      className="group peer text-sidebar-foreground hidden [@media(min-width:1286px)]:block"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
       data-side={side}
       data-slot="sidebar"
     >
-      {/* This is what handles the sidebar gap on desktop */}
+    
       <div
         data-slot="sidebar-gap"
         className={cn(
@@ -266,7 +266,8 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("size-7", className)}
+     
+      className={cn("size-7 [@media(min-width:1286px)]:hidden", className)} 
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()

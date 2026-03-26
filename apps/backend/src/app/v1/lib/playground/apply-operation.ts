@@ -34,7 +34,11 @@ function findItemIndex(folder: TemplateItem, name: string): number {
 
   return folder.items.findIndex((item) => {
     if ("folderName" in item) return item.folderName === name;
-    return `${item.fileName}.${item.fileExtension}` === name;
+   const fullName = item.fileExtension 
+      ? `${item.fileName}.${item.fileExtension}` 
+      : item.fileName;
+      
+    return fullName === name;
   });
 }
 
@@ -75,11 +79,17 @@ export function applyOperation(
       
       item.folderName = operation.newName;
     } else {
-      const [name, ...ext] = operation.newName.split(".");
-      if (!name) return;
-      item.fileName = name;
-      item.fileExtension = ext.join(".");
+    const parts = operation.newName.split(".");
+    if (parts.length > 1) {
+        
+        item.fileExtension = parts.pop() || ""; 
+        item.fileName = parts.join(".");
+    } else {
+       
+        item.fileName = operation.newName;
+        item.fileExtension = ""; 
     }
+}
     return;
   }
 
