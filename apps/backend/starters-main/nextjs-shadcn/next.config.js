@@ -4,6 +4,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    forceSwcTransforms: true,
+  },
   images: { unoptimized: true },
 };
 

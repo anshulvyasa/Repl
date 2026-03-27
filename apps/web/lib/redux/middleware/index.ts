@@ -95,9 +95,9 @@ export const readFileOperationFromLocalStorage = (playgroundId: string) => {
     const key = getFileOpsKey(playgroundId);
     const stored = localStorage.getItem(key);
 
-    if (!stored){
+    if (!stored) {
         console.log("Nhi Hai ji")
-        console.log("Key is ",key);
+        console.log("Key is ", key);
         return null;
     }
     try {

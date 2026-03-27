@@ -8,8 +8,6 @@ export const createMonacoModelsFromTemplateFiles = (
 ) => {
 
     // deriving modal for uri
-
-
     const pathToContent: Map<string, string> = new Map();
     const path: string[] = [];
 

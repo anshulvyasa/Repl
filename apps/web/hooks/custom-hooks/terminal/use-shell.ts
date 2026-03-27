@@ -1,26 +1,21 @@
-import { IDisposable, Terminal } from "@xterm/xterm"
-import { WebContainer, WebContainerProcess } from '@webcontainer/api'
-import { RefObject, useEffect, useRef } from "react"
-import { handleTerminalInput } from "@/lib/terminal/terminal-input-handler"
+"use client";
+
+import { WebContainer, WebContainerProcess } from "@webcontainer/api"
+import { Terminal, IDisposable } from "@xterm/xterm"
+import { useEffect, useRef } from "react"
+
 
 interface useShellProps {
     terminal: Terminal | null
     webContainer: WebContainer | null
-    currentLine: RefObject<string>
-    cursorPosition: RefObject<number>
-    commandHistoryRef: RefObject<string[]>;
-    historyIndex: RefObject<number>;
-    processRef: RefObject<WebContainerProcess | null>
 }
 
-export const useShell = ({ terminal, webContainer, currentLine, cursorPosition, commandHistoryRef, historyIndex, processRef }: useShellProps) => {
-    const refStartShell = useRef<boolean>(false);
+export const useShell = ({ terminal, webContainer }: useShellProps) => {
+    const isStartedRef = useRef<boolean>(false);
 
     useEffect(() => {
-        if (!terminal || !webContainer) return;
-
-        if (refStartShell.current) return;
-        refStartShell.current = true;
+        if (!terminal || !webContainer || isStartedRef.current) return;
+        isStartedRef.current = true;
 
         let shellProcess: WebContainerProcess | null = null;
         let onDataDisposable: IDisposable | null = null;
@@ -34,19 +29,23 @@ export const useShell = ({ terminal, webContainer, currentLine, cursorPosition, 
                 }
             });
 
+
             shellProcess.output.pipeTo(new WritableStream({
                 write(data) {
                     terminal.write(data);
                 }
             }));
 
-            const input = shellProcess.input.getWriter();
+            const inputWriter = shellProcess.input.getWriter();
+            onDataDisposable = terminal.onData((data) => {
+                inputWriter.write(data);
+            })
 
-            onDataDisposable = terminal.onData((data) => handleTerminalInput({ data, terminal, webContainer, currentLine, cursorPosition, commandHistoryRef, historyIndex, processRef }));
-            onResizeDisposable = terminal.onResize((dims) =>
-                shellProcess?.resize({ rows: dims.rows, cols: dims.cols })
-            );
-        };
+            onResizeDisposable = terminal.onResize((dims) => {
+                shellProcess?.resize({ rows: dims.rows, cols: dims.cols });
+            })
+
+        }
 
         startShellProcess();
 
@@ -54,8 +53,8 @@ export const useShell = ({ terminal, webContainer, currentLine, cursorPosition, 
             onDataDisposable?.dispose();
             onResizeDisposable?.dispose();
             shellProcess?.kill();
-            refStartShell.current = false;
-        };
+            isStartedRef.current = false;
+        }
 
-    }, [terminal, webContainer]);
-};
+    }, [terminal, webContainer])
+}
