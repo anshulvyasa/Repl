@@ -8,7 +8,7 @@ export async function getWebContainerInstance(): Promise<WebContainer> {
   }
 
   try {
-    console.log("Booting WebContainer...");
+    console.log("Booting WebContainer");
     webcontainerPromise = WebContainer.boot(); 
     
     const instance = await webcontainerPromise; 

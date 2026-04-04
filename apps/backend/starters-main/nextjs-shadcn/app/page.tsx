@@ -8,7 +8,7 @@ export default function Home() {
         textAlign: 'center',
       }}
     >
-      Start prompting.
+      Welcome To Repl. it's nice to Have You Onboard
     </div>
   );
 }

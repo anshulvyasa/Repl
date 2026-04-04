@@ -113,8 +113,12 @@ const Playground = () => {
   }, [globallySelectedFile, isMonacoReady]);
 
   useEffect(() => {
+
+  }, [])
+
+  useEffect(() => {
     const initWebContainer = async () => {
-      if (!templatePlaygroundSelector || hasMountedFiles.current) return;
+      if (!templatePlaygroundSelector || hasMountedFiles.current || !terminal) return;
 
       try {
         const webcontainer = await getWebContainerInstance();
@@ -130,18 +134,32 @@ const Playground = () => {
         await webcontainer.mount(webContainerFileTree);
         hasMountedFiles.current = true;
 
+        toast.success("WebContainer booted successfully. Starting setup...");
+
         webcontainer.on("server-ready", (port, url) => {
+          console.log("Server ready on", url);
           setPreviewUrl(url);
+
         });
 
         const installProcess = await webcontainer.spawn('npm', ['install'], {
           cwd: templatePlaygroundSelector.folderName
         });
 
+        installProcess.output.pipeTo(
+          new WritableStream({
+            write(data) {
+              console.log("[NPM INSTALL]: ", data);
+            }
+          })
+        );
+
         const installExitCode = await installProcess.exit;
         if (installExitCode !== 0) {
-          throw new Error("unable To Install Dependency");
+          throw new Error("Unable to install dependencies (exit code " + installExitCode + ")");
         }
+
+        toast.success("Dependencies installed. Starting dev server...");
 
         const devProcess = await webcontainer.spawn('npm', ['run', 'dev'], {
           cwd: templatePlaygroundSelector.folderName
@@ -155,21 +173,69 @@ const Playground = () => {
           })
         );
 
-      } catch (error) {
+      } catch (error: any) {
         console.error("WebContainer setup failed", error);
+        toast.error("WebContainer setup failed: " + error.message);
       }
     };
 
     initWebContainer();
 
-  }, [templatePlaygroundSelector]);
+  }, [templatePlaygroundSelector, terminal]);
 
   useEffect(() => {
-    if (!terminal || !webContainerRef.current) return;
+    const instantiateWebContainer = async () => {
+      if (!terminal || webContainerRef.current === null || !templatePlaygroundSelector) return;
 
+      const webContainerFileTree: FileSystemTree = {};
+      buildWebContainerFileTree(templatePlaygroundSelector, webContainerFileTree);
 
+      await webContainerRef.current.mount(webContainerFileTree);
+      hasMountedFiles.current = true;
 
-  }, [terminal, webContainerRef.current])
+      toast.success("WebContainer booted successfully. Starting setup...");
+
+      webContainerRef.current.on("server-ready", (port, url) => {
+        console.log("Server ready on", url);
+        setPreviewUrl(url);
+      });
+
+      const installProcess = await webContainerRef.current.spawn('npm', ['install'], {
+        cwd: templatePlaygroundSelector.folderName
+      });
+
+      installProcess.output.pipeTo(
+        new WritableStream({
+          write(data) {
+            console.log("[NPM INSTALL]: ", data);
+          }
+        })
+      );
+
+      const installExitCode = await installProcess.exit;
+      if (installExitCode !== 0) {
+        throw new Error("Unable to install dependencies (exit code " + installExitCode + ")");
+      }
+
+      toast.success("Dependencies installed. Starting dev server...");
+
+      const devProcess = await webContainerRef.current.spawn('npm', ['run', 'dev'], {
+        cwd: templatePlaygroundSelector.folderName
+      });
+
+      devProcess.output.pipeTo(
+        new WritableStream({
+          write(data) {
+            console.log("[DEV SERVER]: ", data);
+          }
+        })
+      );
+
+    }
+
+    instantiateWebContainer();
+
+  }, [terminal, webContainerRef.current, templatePlaygroundSelector])
 
   return (
     <TooltipProvider>
@@ -234,7 +300,7 @@ const Playground = () => {
                     <a
                       href={`/preview?url=${encodeURIComponent(previewUrl || '')}`}
                       target="_blank"
-                      rel="noreferrer" // Note: intentionally omitted 'noopener'
+                      rel="noreferrer"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>
@@ -252,18 +318,21 @@ const Playground = () => {
               </div>
 
               {/* Iframe */}
-              <div className="flex-1 relative">
+              <div className="flex-1 relative overflow-hidden flex flex-col">
+                {/* DEBUGGING BAR */}
+                <div className="bg-yellow-500/20 text-yellow-500 text-xs p-1">
+                  Debug URL: {previewUrl ? previewUrl : "NULL"}
+                </div>
                 {previewUrl ? (
                   <iframe
                     src={previewUrl}
-                    className="absolute inset-0 h-full w-full border-0"
+                    className="flex-1 h-full w-full border-0 bg-white"
                     title="WebContainer Preview"
                     allow="cross-origin-isolated"
-                    // @ts-ignore
-                    credentialless="true"
+                    onError={(e) => console.error("Iframe error:", e)}
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-zinc-500">
+                  <div className="flex flex-1 items-center justify-center text-zinc-500">
                     <p>Waiting for dev server to start...</p>
                   </div>
                 )}
