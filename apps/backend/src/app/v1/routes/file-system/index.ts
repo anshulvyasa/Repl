@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { authMiddleWare } from "../../middleware/auth-middleware";
-import { getPlaygroundFiles ,syncPlaygroundFiles} from "../../controllers/file-system";
+import { authMiddleWare } from "../../middleware/auth-middleware.js";
+import { getPlaygroundFiles ,syncPlaygroundFiles} from "../../controllers/file-system/index.js";
 
 export const fileSystemRoutes: Router = Router();
 

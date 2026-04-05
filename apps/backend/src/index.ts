@@ -5,7 +5,7 @@ dotenv.config();
 import express from "express";
 import cookieparser from "cookie-parser";
 import cors from "cors";
-import { v1Routes } from "./app/v1";
+import { v1Routes } from "./app/v1/index.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;

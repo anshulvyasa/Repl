@@ -4,7 +4,7 @@ import {
   deleteTemplate,
   getAllTemplate,
   updatePopularity,
-} from "../../controllers/template";
+} from "../../controllers/template/index.js";
 
 export const templateRoute: Router = Router();
 

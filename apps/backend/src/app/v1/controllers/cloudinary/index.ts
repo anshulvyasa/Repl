@@ -1,4 +1,4 @@
-import { uploadToCloudinary } from "../../lib/cloudinary/cloudinary"
+import { uploadToCloudinary } from "../../lib/cloudinary/cloudinary.js"
 import { Request, Response } from "express"
 import { prisma } from "@repo/db/jsclient"
 import fs from "fs/promises"

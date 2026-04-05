@@ -1,16 +1,16 @@
 import { prisma } from "@repo/db/jsclient";
 import { Prisma } from "@repo/db";
 import { Request, Response } from "express";
-import { FileOperationSchema, FileOperationSchemaQueue } from "@repo/zod/files-operation-queue";
+import { FileOperationSchemaQueue } from "@repo/zod/files-operation-queue";
 import {
   readTemplateStructureFromJson,
   saveTemplateStructureToJson,
-} from "../../lib/playground/path-to-json";
+} from "../../lib/playground/path-to-json.js";
 import fs from "fs/promises";
 import path from "path";
-import { templatePaths } from "../../lib/template";
-import { TemplateItem } from "@repo/zod/files";
-import { applyOperation } from "../../lib/playground/apply-operation";
+import { templatePaths } from "../../lib/template/index.js";
+import { TemplateFolderSchema } from "@repo/zod/files";
+import { renameFilesOrFolder, addFileOrFolder, deleteFilesOrFolder } from "@repo/utilities/files-operation";
 
 export const getPlaygroundFiles = async (req: Request, res: Response) => {
   if (!req.user?.id) {
@@ -76,7 +76,7 @@ export const getPlaygroundFiles = async (req: Request, res: Response) => {
 
       await fs.rm(outputPath, { recursive: true });
     }
-  
+
     res.status(200).json({
       success: true,
       files: playgroundTemplateFiles,
@@ -94,18 +94,76 @@ export const syncPlaygroundFiles = async (req: Request, res: Response) => {
   const { playgroundId } = req.params;
   const body = req.body;
 
-  console.log("Inside The Sync Controller");
-  console.log("PlayGround Id is ", playgroundId);
-  console.log("Body is ", body);
+  const parsedBody = FileOperationSchemaQueue.safeParse(body);
+  if (!parsedBody.success) {
+    res.status(400).json({
+      success: false,
+      message: "Please Send Correct File Operations"
+    })
+    return;
+  }
 
-  const parsedBody=FileOperationSchemaQueue.safeParse(body);
-  console.log(parsedBody.success);
-  console.log(parsedBody.error);
+  try {
+    const playgroundTemplateFiles = await prisma.templateFile.findUnique({
+      where: {
+        playgroundId
+      }
+    })
 
-  res.status(200).json({
-    success: true,
-    message: "hey"
-  })
+    const parsedPlaygroundTemplateFile = TemplateFolderSchema.safeParse(playgroundTemplateFiles?.content);
+
+    if (!parsedPlaygroundTemplateFile.success) {
+      res.status(400).json({
+        success: false,
+        message: "Incorrent Files Are Stored in Your Playground"
+      })
+      return;
+    }
+
+    for (const item of parsedBody.data.items) {
+      // Rename File Or Folder
+      if ("newName" in item) {
+        const path = item.path.split('/').filter(Boolean);
+        const newName = item.newName;
+
+        if (path[path.length - 1]?.trim() === newName.trim()) continue;
+        renameFilesOrFolder(parsedPlaygroundTemplateFile.data, path, 0, newName);
+      }
+      // Add Files
+      else if ("data" in item) {
+        const path = item.path.split("/").filter(Boolean);;
+        addFileOrFolder(parsedPlaygroundTemplateFile.data, item.data, path, 0);
+      }
+      // delete case
+      else {
+        const path = item.path.split("/").filter(Boolean);
+        deleteFilesOrFolder(parsedPlaygroundTemplateFile.data, path, 0);
+      }
+    }
+
+    // console.log(JSON.stringify(parsedPlaygroundTemplateFile.data))
+    await prisma.templateFile.update({
+      where: {
+        playgroundId
+      },
+      data: {
+        content: parsedPlaygroundTemplateFile.data as unknown as Prisma.InputJsonValue
+      }
+    })
+
+    res.status(200).json({
+      success: true,
+      message: "Files Synced!"
+    })
+  }
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Side Error"
+    })
+  }
+
+
 }
 
 //syncing playground files from client to server

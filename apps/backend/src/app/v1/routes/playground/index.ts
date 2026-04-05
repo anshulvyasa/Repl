@@ -5,8 +5,8 @@ import {
   editPlayGround,
   getAllPlaygroundForUser,
   starMarkPlayground,
-} from "../../controllers/playground";
-import { authMiddleWare } from "../../middleware/auth-middleware";
+} from "../../controllers/playground/index.js";
+import { authMiddleWare } from "../../middleware/auth-middleware.js";
 
 export const playGroundRoutes: Router = Router();
 

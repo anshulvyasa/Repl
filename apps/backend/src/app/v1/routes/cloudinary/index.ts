@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { POSTimage } from "../../controllers/cloudinary";
-import { authMiddleWare } from "../../middleware/auth-middleware";
-import { upload } from "../../middleware/multer-middleware";
+import { POSTimage } from "../../controllers/cloudinary/index.js";
+import { authMiddleWare } from "../../middleware/auth-middleware.js";
+import { upload } from "../../middleware/multer-middleware.js";
 
 export const cloudinaryRoutes: Router = Router();
 

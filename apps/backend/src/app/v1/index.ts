@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { playGroundRoutes } from "./routes/playground";
-import { templateRoute } from "./routes/template";
-import { fileSystemRoutes } from "./routes/file-system";
-import {cloudinaryRoutes} from "./routes/cloudinary"
+import { playGroundRoutes } from "./routes/playground/index.js";
+import { templateRoute } from "./routes/template/index.js";
+import { fileSystemRoutes } from "./routes/file-system/index.js";
+import {cloudinaryRoutes} from "./routes/cloudinary/index.js"
 
 export const v1Routes: Router = Router();
 
