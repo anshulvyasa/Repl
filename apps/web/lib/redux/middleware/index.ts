@@ -1,19 +1,16 @@
 import { isAction, Middleware } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import { AppDispatch, RootState } from "../store";
 import { FilesSelected, ModifiedFileSelected } from "../features/file-selected";
-import { TemplateFilesTypes } from "../features/playground-file-data";
+import { addFiles, deleteFiles, renameFiles, TemplateFilesTypes } from "../features/playground-file-data";
 import { useTemplatePlayground } from "../selectoranddispatcher/useTemplatePlayground";
 import { FilesSelectedSchema } from "@repo/zod/selected-files";
-import { FileOperationSchemaQueue } from "@repo/zod/files-operation-queue";
+import { FileOperationSchemaQueue, FileOperationSchemaQueueType } from "@repo/zod/files-operation-queue";
 
-const TTL = 7 * 24 * 60 * 60 * 1000;
+
+
 const STORAGE_SELECTED_FILE_PREFIX = "playground-selected-files";
 const STORAGE_FILE_OPS_PREFIX = "playground-file-ops";
 
-type SelectedFileDataLocalStorageType = {
-    state: FilesSelected,
-    expiredAt: number
-}
 
 // Helper to ensure the key is always perfectly formatted everywhere
 const getStorageKey = (playgroundId: string) => `${STORAGE_SELECTED_FILE_PREFIX}:${playgroundId}`;
@@ -96,8 +93,6 @@ export const readFileOperationFromLocalStorage = (playgroundId: string) => {
     const stored = localStorage.getItem(key);
 
     if (!stored) {
-        console.log("Nhi Hai ji")
-        console.log("Key is ", key);
         return null;
     }
     try {
@@ -117,5 +112,31 @@ export const readFileOperationFromLocalStorage = (playgroundId: string) => {
         return null;
     }
 }
+
+export const updateTemplateFilesFromCache = (queue: FileOperationSchemaQueueType) => {
+    return (dispatch: AppDispatch) => {
+        if (queue.head === -1) return;
+
+        for (const item of queue.items) {
+            if ("newName" in item) {
+                const path = item.path.split('/').filter(Boolean);
+                const newName = item.newName;
+
+                if (path[path.length - 1]?.trim() === newName.trim()) continue;
+                dispatch(renameFiles({ path, newName }));
+            }
+            // Add Files
+            else if ("data" in item) {
+                const path = item.path.split("/").filter(Boolean);;
+                dispatch(addFiles({ data: item.data, path }));
+            }
+            // delete case
+            else {
+                const path = item.path.split("/").filter(Boolean);
+                dispatch(deleteFiles({ path }));
+            }
+        }
+    };
+};
 
 

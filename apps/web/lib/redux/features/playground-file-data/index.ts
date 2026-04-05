@@ -49,10 +49,7 @@ const playgroundTemplateFiles = createSlice({
       const { data, path } = action.payload;
       if (!state) return state;
 
-
-      const relativePath = path.slice(1, -1);
-
-      addFileOrFolder(state, data, relativePath, 0);
+      addFileOrFolder(state, data, path, 0);
       sortTemplateTree(state.items);
     },
 

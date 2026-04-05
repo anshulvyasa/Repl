@@ -146,13 +146,13 @@ const Playground = () => {
           cwd: templatePlaygroundSelector.folderName
         });
 
-        installProcess.output.pipeTo(
-          new WritableStream({
-            write(data) {
-              console.log("[NPM INSTALL]: ", data);
-            }
-          })
-        );
+        // installProcess.output.pipeTo(
+        //   new WritableStream({
+        //     write(data) {
+        //       console.log("[NPM INSTALL]: ", data);
+        //     }
+        //   })
+        // );
 
         const installExitCode = await installProcess.exit;
         if (installExitCode !== 0) {

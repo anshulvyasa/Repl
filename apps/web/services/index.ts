@@ -1,4 +1,5 @@
 import axiosInstance from "@/axiosinstance";
+import { FileOperationSchemaQueueType, FileOperationSchemaType } from "@repo/zod/files-operation-queue";
 import type {
   createPlaygroundSchemaType,
   editPlaygroundSchemaType,
@@ -41,3 +42,10 @@ export const getPlaygroundTemplateFiles = async (id: string) => {
 
   return response.data;
 };
+
+
+export const updateFilesOperationService = async (id: string, queue: FileOperationSchemaQueueType) => {
+  const response = await axiosInstance.post(`app/v1/files/sync/${id}`, queue);
+
+  return response.data;
+}

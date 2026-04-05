@@ -9,14 +9,6 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   if (!storeRef.current) {
     storeRef.current = makeStore();
-
-    storeRef.current.subscribe(() => {
-      const state = storeRef.current!.getState();
-      localStorage.setItem(
-        "fileops",
-        JSON.stringify(state.fileOperations)
-      );
-    });
   }
 
   return <Provider store={storeRef.current}>{children}</Provider>;

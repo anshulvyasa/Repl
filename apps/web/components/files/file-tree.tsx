@@ -1,7 +1,7 @@
 import { RenameFileFolderSchemaType, DeleteFileFolderSchemaType, AddFileFolderSchemaType } from "@repo/zod/files-operation-queue";
 import { toast } from "sonner";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
-import { useFileOperations } from "@/lib/redux/selectoranddispatcher/useFileOperation";
+import { useFileOperations } from "@/lib/redux/selectoranddispatcher/useFileOperationQueue";
 import { RenderFile } from "./renderfiles";
 import { RenderFolder } from "./rederfolder";
 import { TemplateItem } from "@repo/zod/files";

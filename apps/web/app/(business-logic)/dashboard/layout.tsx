@@ -1,17 +1,13 @@
 "use client";
 
 import SidebarComponent from "@/components/dashboard/sidebar-comp";
-import { SidebarProvider, SidebarTrigger,useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger,} from "@/components/ui/sidebar";
 import { PlayGround } from "@/lib/redux/features/projects";
 import { useProject } from "@/lib/redux/selectoranddispatcher/useProjects";
 import { getAllPlayGroundService } from "@/services";
 import { playGroundSchemaForClient } from "@repo/zod/playground";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { fileQueueThunk } from "@/lib/redux/features/file-operation-queue";
-import { useRef } from "react";
-
 
 
 type PlaygroundItem = {
@@ -99,30 +95,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     setFormattedPlaygroundData(formattedPlayground);
   }, [query.data]);
 
- const fileOpsQueue = useAppSelector((s) => s.fileOperations);
-const dispatch = useAppDispatch();
-const syncingRef = useRef(false);
-
-useEffect(() => {
-  if (syncingRef.current) return;
-
-  if (
-    fileOpsQueue.items.length > 0 &&
-    fileOpsQueue.head < fileOpsQueue.items.length
-  ) {
-    syncingRef.current = true;
-
-    (async () => {
-      try {
-        await dispatch(fileQueueThunk() as any);
-      } finally {
-        syncingRef.current = false;
-      }
-    })();
-  }
-}, [fileOpsQueue, dispatch]);
-
-
 
  return (
     <SidebarProvider className="flex min-h-screen w-full">
@@ -137,7 +109,6 @@ useEffect(() => {
             <span className="font-bold text-sm">Repl</span>
           </div>
         </header>
-
       
         <div className="flex-1 overflow-auto">
           {children}
