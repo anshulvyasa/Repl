@@ -13,6 +13,7 @@ interface useShellProps {
 export const useShell = ({ terminal, webContainer }: useShellProps) => {
     const isStartedRef = useRef<boolean>(false);
 
+
     useEffect(() => {
         if (!terminal || !webContainer || isStartedRef.current) return;
         isStartedRef.current = true;
@@ -30,6 +31,7 @@ export const useShell = ({ terminal, webContainer }: useShellProps) => {
             });
 
 
+            console.log("Inside The Use Shell!!")
             shellProcess.output.pipeTo(new WritableStream({
                 write(data) {
                     terminal.write(data);
@@ -41,6 +43,7 @@ export const useShell = ({ terminal, webContainer }: useShellProps) => {
                 inputWriter.write(data);
             })
 
+           
             onResizeDisposable = terminal.onResize((dims) => {
                 shellProcess?.resize({ rows: dims.rows, cols: dims.cols });
             })

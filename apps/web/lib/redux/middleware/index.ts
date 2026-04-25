@@ -136,6 +136,7 @@ export const updateTemplateFilesFromCache = (queue: FileOperationSchemaQueueType
                 dispatch(deleteFiles({ path }));
             }
         }
+        
     };
 };
 

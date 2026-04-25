@@ -8,6 +8,7 @@ import selectedPlaygroundInfoReducer from './features/playgroundInfo/index'
 import fileOperationQueueReducer from "./features/file-operation-queue/index"
 import globalFileSelectionReducer from './features/file-selected/index'
 import webContainerFilesReducer from './features/web-container-files/index';
+import previewUrlReducer from "./features/peview_url/index";
 import { reduxMiddleware } from "./middleware";
 
 
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
   selectedPlaygroundInfo: selectedPlaygroundInfoReducer,
   fileOperations: fileOperationQueueReducer,
   fileSelected: globalFileSelectionReducer,
-  webContainerFiles: webContainerFilesReducer
+  webContainerFiles: webContainerFilesReducer,
+  previewUrl: previewUrlReducer
 })
 
 export const makeStore = () => {

@@ -34,6 +34,7 @@
     "@tanstack/react-query": "^5.90.3",
     "@typescript/ata": "^0.9.8",
     "@webcontainer/api": "^1.6.1",
+    "@xterm/addon-clipboard": "^0.2.0",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/addon-web-links": "^0.12.0",
     "@xterm/xterm": "^6.0.0",

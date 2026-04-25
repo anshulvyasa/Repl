@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTemplatePlayground } from "@/lib/redux/selectoranddispatcher/useTemplatePlayground";
 import { useSelectedPlaygroundInfo } from "@/lib/redux/selectoranddispatcher/useUpdateSelectedPlaygroundInfo";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { buildWebContainerFileTree, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import Editor, { Monaco, OnMount } from '@monaco-editor/react'
 import { useTheme } from 'next-themes'
 import { getEditorLanguage, handleEditorBeforeMount } from "@/lib/editor/config";
@@ -17,12 +17,13 @@ import * as monaco from 'monaco-editor';
 import { TemplateFile } from "@repo/zod/files";
 import { readSelectedFilesFromLocalStorage } from "@/lib/redux/middleware";
 import { useTerminal } from "@/hooks/custom-hooks/terminal/use-Terminal";
-import { FileSystemTree, WebContainer } from "@webcontainer/api";
+import { WebContainer } from "@webcontainer/api";
 import { getWebContainerInstance } from "@/lib/webcontainer";
-import { toast } from "sonner";
 import { ExternalLink, Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useShell } from "@/hooks/custom-hooks/terminal/use-shell";
+import { toast } from "sonner";
+import { WriteStream } from "node:fs";
 
 const DUMMY_MODEL_URI = "file:///dummy";
 const DUMMY_MODEL_CONTENT = "Welcome to repl. select files in order to get started"
@@ -34,12 +35,12 @@ const Playground = () => {
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
   const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
-  const hasMountedFiles = useRef<boolean>(false);
-  const webContainerRef = useRef<WebContainer>(null);
+
 
   // Defining Terminal Hooks
   const { containerRef, terminal } = useTerminal({ theme: resolvedTheme == "dark" ? "dark" : "light" });
-  useShell({ terminal, webContainer: webContainerRef.current });
+  const [webContainer, setWebContainer] = useState<WebContainer | null>(null);
+  useShell({ terminal, webContainer: webContainer });
 
 
   const [previewUrl, setPreviewUrl] = useState<string>();
@@ -48,6 +49,8 @@ const Playground = () => {
   const { templatePlaygroundSelector } = useTemplatePlayground();
   const { selectedPlayground } = useSelectedPlaygroundInfo();
   const { globallySelectedFile, allgloballySelectedFile, updateContentOfGlobalSelectedFile, initializeIntialStateOfSelectedFiles } = useGlobalSelectedFile();
+
+
 
   const handleEditorMount: OnMount = useCallback((editor, monaco) => {
     monacoRef.current = monaco;
@@ -64,18 +67,6 @@ const Playground = () => {
     if (!value || !globallySelectedFile) return;
   }
 
-  useEffect(() => {
-    if (!monacoRef.current) return;
-    if (!templatePlaygroundSelector || !selectedPlayground) return;
-
-    createMonacoModelsFromTemplateFiles(templatePlaygroundSelector, monacoRef.current);
-
-    const parsedData = readSelectedFilesFromLocalStorage(selectedPlayground?.id);
-    if (!parsedData) return;
-
-    initializeIntialStateOfSelectedFiles(parsedData);
-  }, [isMonacoReady])
-
   const openFileInEditor = useCallback((editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco, path: string[], file: TemplateFile) => {
     const initialPath = generateFilePath(path, file);
     const uri = monaco.Uri.parse(`file://${initialPath}`);
@@ -90,6 +81,20 @@ const Playground = () => {
     monaco.editor.setModelLanguage(model, language);
     editor.setModel(model);
   }, []);
+
+
+  useEffect(() => {
+    if (!monacoRef.current) return;
+    if (!templatePlaygroundSelector || !selectedPlayground) return;
+
+    createMonacoModelsFromTemplateFiles(templatePlaygroundSelector, monacoRef.current);
+
+    const parsedData = readSelectedFilesFromLocalStorage(selectedPlayground?.id);
+    if (!parsedData) return;
+
+    initializeIntialStateOfSelectedFiles(parsedData);
+  }, [isMonacoReady])
+
 
   useEffect(() => {
     if (!monacoRef.current || !editoRef.current) return;
@@ -112,130 +117,46 @@ const Playground = () => {
 
   }, [globallySelectedFile, isMonacoReady]);
 
+  // For The Web Container and Terminal
   useEffect(() => {
+    console.log("Template File Selector is  inside page.tsx", templatePlaygroundSelector)
 
+    const run = async () => {
+      const webContainerInstance = await getWebContainerInstance();
+      setWebContainer(webContainerInstance);   // Setting up Refrance
+
+      toast.success("Installing Dependencies");
+      const installProcess = await webContainerInstance.spawn("npm", ["install"], {
+        cwd: templatePlaygroundSelector?.folderName
+      });
+
+      await installProcess.exit;
+      // TODO if Install is Failed DO Something Future Works
+      toast.success("Dependecies Installed");
+
+      webContainerInstance.on("server-ready", (port, url) => {
+        console.log("Url is ", url)
+        console.log("Port is ", port)
+        setPreviewUrl(url)
+      })
+
+      const res = await webContainerInstance.spawn("npm", ["run", "dev"],
+        {
+          cwd: templatePlaygroundSelector?.folderName
+        }
+      )
+
+      res.output.pipeTo(
+        new WritableStream({
+          write(chunk) {
+            console.log("The OutPut of NPM run DEV is ", chunk);
+          }
+        })
+      );
+    }
+    run();
   }, [])
 
-  useEffect(() => {
-    const initWebContainer = async () => {
-      if (!templatePlaygroundSelector || hasMountedFiles.current || !terminal) return;
-
-      try {
-        const webcontainer = await getWebContainerInstance();
-        if (!webcontainer) {
-          toast.error("Error While Creating Web Conatiner Instance");
-          return;
-        }
-
-        webContainerRef.current = webcontainer;
-        const webContainerFileTree: FileSystemTree = {};
-        buildWebContainerFileTree(templatePlaygroundSelector, webContainerFileTree);
-
-        await webcontainer.mount(webContainerFileTree);
-        hasMountedFiles.current = true;
-
-        toast.success("WebContainer booted successfully. Starting setup...");
-
-        webcontainer.on("server-ready", (port, url) => {
-          console.log("Server ready on", url);
-          setPreviewUrl(url);
-
-        });
-
-        const installProcess = await webcontainer.spawn('npm', ['install'], {
-          cwd: templatePlaygroundSelector.folderName
-        });
-
-        // installProcess.output.pipeTo(
-        //   new WritableStream({
-        //     write(data) {
-        //       console.log("[NPM INSTALL]: ", data);
-        //     }
-        //   })
-        // );
-
-        const installExitCode = await installProcess.exit;
-        if (installExitCode !== 0) {
-          throw new Error("Unable to install dependencies (exit code " + installExitCode + ")");
-        }
-
-        toast.success("Dependencies installed. Starting dev server...");
-
-        const devProcess = await webcontainer.spawn('npm', ['run', 'dev'], {
-          cwd: templatePlaygroundSelector.folderName
-        });
-
-        devProcess.output.pipeTo(
-          new WritableStream({
-            write(data) {
-              console.log("[DEV SERVER]: ", data);
-            }
-          })
-        );
-
-      } catch (error: any) {
-        console.error("WebContainer setup failed", error);
-        toast.error("WebContainer setup failed: " + error.message);
-      }
-    };
-
-    initWebContainer();
-
-  }, [templatePlaygroundSelector, terminal]);
-
-  useEffect(() => {
-    const instantiateWebContainer = async () => {
-      if (!terminal || webContainerRef.current === null || !templatePlaygroundSelector) return;
-
-      const webContainerFileTree: FileSystemTree = {};
-      buildWebContainerFileTree(templatePlaygroundSelector, webContainerFileTree);
-
-      await webContainerRef.current.mount(webContainerFileTree);
-      hasMountedFiles.current = true;
-
-      toast.success("WebContainer booted successfully. Starting setup...");
-
-      webContainerRef.current.on("server-ready", (port, url) => {
-        console.log("Server ready on", url);
-        setPreviewUrl(url);
-      });
-
-      const installProcess = await webContainerRef.current.spawn('npm', ['install'], {
-        cwd: templatePlaygroundSelector.folderName
-      });
-
-      installProcess.output.pipeTo(
-        new WritableStream({
-          write(data) {
-            console.log("[NPM INSTALL]: ", data);
-          }
-        })
-      );
-
-      const installExitCode = await installProcess.exit;
-      if (installExitCode !== 0) {
-        throw new Error("Unable to install dependencies (exit code " + installExitCode + ")");
-      }
-
-      toast.success("Dependencies installed. Starting dev server...");
-
-      const devProcess = await webContainerRef.current.spawn('npm', ['run', 'dev'], {
-        cwd: templatePlaygroundSelector.folderName
-      });
-
-      devProcess.output.pipeTo(
-        new WritableStream({
-          write(data) {
-            console.log("[DEV SERVER]: ", data);
-          }
-        })
-      );
-
-    }
-
-    instantiateWebContainer();
-
-  }, [terminal, webContainerRef.current, templatePlaygroundSelector])
 
   return (
     <TooltipProvider>
@@ -319,10 +240,10 @@ const Playground = () => {
 
               {/* Iframe */}
               <div className="flex-1 relative overflow-hidden flex flex-col">
-                {/* DEBUGGING BAR */}
+                {/* DEBUGGING BAR
                 <div className="bg-yellow-500/20 text-yellow-500 text-xs p-1">
                   Debug URL: {previewUrl ? previewUrl : "NULL"}
-                </div>
+                </div> */}
                 {previewUrl ? (
                   <iframe
                     src={previewUrl}

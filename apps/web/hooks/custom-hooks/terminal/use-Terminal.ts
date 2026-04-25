@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState } from "react"
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
-import '@xterm/xterm/css/xterm.css'
+import { ClipboardAddon } from '@xterm/addon-clipboard';
+
 
 const terminalThemes = {
     dark: {
@@ -70,7 +71,14 @@ export const useTerminal = ({ theme = "dark" }: { theme: "dark" | "light" }) => 
             })
 
             const fitAddon = new FitAddon();
+            const clipboardAddon = new ClipboardAddon();
             term.loadAddon(fitAddon);
+            term.loadAddon(clipboardAddon);
+
+            term.onSelectionChange(() => {
+                const text = term.getSelection();
+                if (text) navigator.clipboard.writeText(text);
+            })
 
             term.open(node)
             setTimeout(() => fitAddon.fit(), 100)

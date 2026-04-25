@@ -31,10 +31,8 @@ const slice = createSlice({
       state.head = action.payload;
     },
 
-    initializeFileOpsQueueReducer(state,action:PayloadAction<FileOperationSchemaQueueType>){
-         console.log("Inside Initialize state",action.payload)  
-
-         return action.payload;
+    initializeFileOpsQueueReducer(state,action:PayloadAction<FileOperationSchemaQueueType>){  
+       return action.payload;
     }
   },
 });

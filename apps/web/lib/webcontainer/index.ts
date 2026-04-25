@@ -16,7 +16,7 @@ export async function getWebContainerInstance(): Promise<WebContainer> {
     return instance;
   } catch (error) {
     console.error("Failed to boot WebContainer:", error);
-    webcontainerPromise = null; // Reset on failure so we can try again
+    webcontainerPromise = null; 
     throw error;
   }
 }
