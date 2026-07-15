@@ -23,7 +23,7 @@ import { ExternalLink, Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useShell } from "@/hooks/custom-hooks/terminal/use-shell";
 import { toast } from "sonner";
-import { WriteStream } from "node:fs";
+
 
 const DUMMY_MODEL_URI = "file:///dummy";
 const DUMMY_MODEL_CONTENT = "Welcome to repl. select files in order to get started"
@@ -35,6 +35,7 @@ const Playground = () => {
   const monacoRef = useRef<Monaco>(null);
   const editoRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
   const [isMonacoReady, setIsMonacoReady] = useState<boolean>();
+  const editorModelRef = useRef<string>(null)
 
 
   // Defining Terminal Hooks
@@ -46,10 +47,13 @@ const Playground = () => {
   const [previewUrl, setPreviewUrl] = useState<string>();
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
-  const { templatePlaygroundSelector } = useTemplatePlayground();
+  const { templatePlaygroundSelector, updateFile } = useTemplatePlayground();
   const { selectedPlayground } = useSelectedPlaygroundInfo();
   const { globallySelectedFile, allgloballySelectedFile, updateContentOfGlobalSelectedFile, initializeIntialStateOfSelectedFiles } = useGlobalSelectedFile();
 
+  //Debouncing Hooks
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastArgsRef = useRef<{ pathParts: string[]; value: string } | null>(null);
 
 
   const handleEditorMount: OnMount = useCallback((editor, monaco) => {
@@ -61,10 +65,33 @@ const Playground = () => {
     if (!monaco.editor.getModel(dummyUri)) {
       monaco.editor.createModel(DUMMY_MODEL_CONTENT, "plaintext", dummyUri);
     }
+
   }, [])
+
+
+  // Debouncing logic for File Update
+  const debouncedUpdate = (pathParts: string[], value: string) => {
+    lastArgsRef.current = { pathParts, value };
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(() => {
+      if (lastArgsRef.current) {
+        updateFile(lastArgsRef.current.pathParts, lastArgsRef.current.value);
+      }
+    }, 10000);
+  };
 
   const handleEditorOnChange = (value: string | undefined) => {
     if (!value || !globallySelectedFile) return;
+
+    const model = editoRef.current?.getModel();
+    const path = model?.uri.toString().split("///")[1];
+    console.log("Change Path is ", path)
+
+    if (!path) return;
+
+    debouncedUpdate(path.split("/"), value);
   }
 
   const openFileInEditor = useCallback((editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco, path: string[], file: TemplateFile) => {
@@ -93,6 +120,17 @@ const Playground = () => {
     if (!parsedData) return;
 
     initializeIntialStateOfSelectedFiles(parsedData);
+
+    return () => {
+      const monaco = monacoRef.current;
+      if (!monaco) return;
+
+      monaco.editor.getModels().forEach((model: any) => {
+        model.dispose();
+      });
+
+      editorModelRef.current = null;
+    }
   }, [isMonacoReady])
 
 
@@ -115,6 +153,12 @@ const Playground = () => {
     if (!ModifiedFile) return;
     openFileInEditor(editoRef.current, monacoRef.current, ModifiedFile?.path, ModifiedFile.file);
 
+    return () => {
+      if (timeoutRef.current && lastArgsRef.current) {
+        clearTimeout(timeoutRef.current);
+        updateFile(lastArgsRef.current.pathParts, lastArgsRef.current.value);
+      }
+    }
   }, [globallySelectedFile, isMonacoReady]);
 
   // For The Web Container and Terminal
